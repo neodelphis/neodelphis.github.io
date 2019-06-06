@@ -6,7 +6,6 @@ date:   2019-06-06 10:06:00 +0200
 categories:
   - maths
 ---
-
 Rétropropagation du gradient dans le cadre d'une ultime couche $Softmax$
 
 Cet article présente la rétropropagation du gradient dans un réseau neuronal monocouche complètement connecté, avec softmax comme fonction d'activation et la divergence de Kullback-Leibler comme fonction de coût. Minimiser cette fonction qui fait office de distance entre nos deux distributions va se résumer dans notre cas à réduire l'entropie croisée entre le résultat obtenu et le résultat souhaité.
@@ -20,7 +19,7 @@ Le but est d'optimiser une matrice de poids W pour que la prédiction d'apparten
 <br>
 Ce que l'on connait:<br>
 $X$ vecteur d'entrées de dimension (D)<br>
-$y$ classe à laquelle apparatient le vecteur d'entrées, $y$ est un scalaire $\in \{1,\cdots,C\}$. On associe à $y$ un vecteur de dimension C: $$Y\_one\_hot$$, qui est la version "one hot encoded" de $y$. Tous ses termes sont 0 sauf $$Y\_one\_hot[y]=1$$<br>
+$y$ classe à laquelle apparatient le vecteur d'entrées, $y$ est un scalaire $\in \{1,\cdots,C\}$. On associe à $y$ un vecteur de dimension C: $Y\_one\_hot$, qui est la version "one hot encoded" de $y$. Tous ses termes sont 0 sauf $Y\_one\_hot[y]=1$<br>
 <br>
 Ce que l'on cherche:<br>
 $W$ matrice des poids de dimension (D,C). Où C représente le nombre de classes possibles<br>
@@ -35,7 +34,7 @@ $\lambda$ vecteur logits de dimension (C)<br>
 
 $S$ vecteur de dimension (C) qui donne la probabilité d'appartenance de X pour chacune des classes<br>
 
-** 3 ** Fonction de coût: $$L = D_{KL}(Y\_one\_hot\|\|S)$$ où $$Y\_one\_hot$$ correspond à la répartition de probabilité pour la classe connue.<br>
+** 3 ** Fonction de coût: $L = D_{KL}(Y\_one\_hot||S)$ où $Y\_one\_hot$ correspond à la répartition de probabilité pour la classe connue.<br>
 
 $L$ (Loss) scalaire (1)
 
@@ -68,7 +67,9 @@ S_n
 \end{align*}
 $$
 
-Chaque élément de $S(a)$ est défini par: $$S_i = \frac{e^{a_i}}{ \sum_{k=1}^{N} e^{a_k} }$$  $$\forall i \in \{1,\cdots,N\}$$
+Chaque élément de $S(a)$ est défini par: 
+
+$$S_i = \frac{e^{a_i}}{ \sum_{k=1}^{N} e^{a_k} }$$  $$\forall i \in \{1,\cdots,N\}$$
 
 Par souci de simplification d'écriture on a tendance à nommer de la même manière une fonction et son résultat. $S$ ici est selon le contexte la fonction $softmax$ ou un vecteur de taille N.
 
@@ -92,7 +93,9 @@ $$
 = \frac{e^{\lambda_{i} + \ln C}}{\sum_j e^{\lambda_j + \ln C}}
 $$
 
-Choix classique de $ln(C)$: valeur maximale du vecteur $\lambda$ $$\ln C = -\max_j \lambda_j$$
+Choix classique de $ln(C)$: valeur maximale du vecteur $\lambda$ 
+
+$$\ln C = -\max_j \lambda_j$$
 
 
 ```python
@@ -144,19 +147,13 @@ où le "." correspond au produit matriciel généralisé aux tenseurs.
 ## Jacobien généralisé de $\lambda$ par rapport à $W$
 
 $$\lambda = X.W$$
-
 $$J = \frac{\partial \lambda}{\partial W}$$
 
 Dimensions:
-
-$$X(D)$$
-
-$$W(D,C)$$
-
-$$\lambda (C)$$
-
-$$J (C,D,C)$$
-
+$X(D)\\
+W(D,C)\\
+\lambda (C)\\
+J (C,D,C)$
 
 $$J_{ijk} = \frac{\partial \lambda_i}{\partial w_{jk}}$$
 
@@ -202,9 +199,10 @@ $$
 
 ### Fonction de coût
 
-$$L = D_{KL}(Y\_one\_hot\|S)$$ où $$Y\_one\_hot$$ correspond à la répartition de probabilité pour la classe connue et S les probabilités de la classe prédite par notre modèle.
+$$L = D_{KL}(Y\_one\_hot||S)$$ où $Y\_one\_hot$ correspond à la répartition de probabilité pour la classe connue et S les probabilités de la classe prédite par notre modèle.
 
 La divergence de Kullback-Leibler $D_{KL}$ correspond à une mesure de la similarité entre deux distributions. On peut l'écrire sous la forme $$D_{KL} = H(p,q)-H(p)$$ où p est la véritable distribution et q la répartition estimée. 
+
 $$
 \begin{align*}
 &p_i = Y\_one\_hot_i = 
@@ -217,6 +215,7 @@ $$
 $$
 
 Comme 100% des valeurs de p sont en y on a $H(p)=O$, d'où:
+
 $$
 \begin{align*}
 D_{KL}  & = H(p,q) \\
@@ -225,6 +224,7 @@ D_{KL}  & = H(p,q) \\
 $$
 
 Tous les termes de la somme sont nuls sauf pour $i=y$
+
 $$
 \begin{align*}
 L = D_{KL} & = - ln \frac{e^{\lambda_{y}}}{\sum_j e^{\lambda_j}} \\
@@ -235,6 +235,7 @@ $$
 ### Calcul de la dérivée de L
 
 Calcul prélimiaire: 
+
 $$
 \begin{align*}
 \frac{\partial}{\partial \lambda_i}ln(\sum_j e^{\lambda_j}) & = \frac{e^{\lambda_{i}}}{\sum_j e^{\lambda_j}} \\
@@ -255,6 +256,7 @@ $$
 ## Gradients dW et dX
 
 En incorporant cette dernière formule à dW, Jacobien de $L$ par rapport à $W$, on obtient une expression du gradient facilement programmable. 
+
 $$
 \begin{align*}
 &\frac{\partial L}{\partial W} = X^T.\frac{\partial L}{\partial \lambda} \\
@@ -269,6 +271,7 @@ $$
 Sur [github](https://github.com/neodelphis/cs231n-assignment1/blob/master/cs231n/classifiers/softmax.py) une version avec boucles et une version vectorisée de cette fonction.
 
 De même, le couple d'équations pour exprimer dX, Jacobien de L par rapport à X:
+
 $$
 \begin{align*}
 &\frac{\partial L}{\partial X} = \frac{\partial L}{\partial \lambda}.W^T \\
@@ -289,8 +292,3 @@ $$
 [Demystifying KL Divergence](https://towardsdatascience.com/demystifying-kl-divergence-7ebe4317ee68)
 
 [How the backpropagation algorithm works](http://neuralnetworksanddeeplearning.com/chap2.html)
-
-
-```python
-
-```

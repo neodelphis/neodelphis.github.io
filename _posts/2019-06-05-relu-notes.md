@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title:  "Rétropropagation couche relu"
-date:   2019-06-06 18:00:00 +0200
+date:   2019-06-05 18:00:00 +0200
 categories:
   - jupyter
   - maths
