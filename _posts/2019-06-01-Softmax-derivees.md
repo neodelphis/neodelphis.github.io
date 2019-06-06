@@ -1,7 +1,7 @@
 ---
 layout: post
 mathjax: true
-title:  "Rétropropagation du gradient softmax"
+title:  "La fonction softmax et ses dérivées"
 date:   2019-06-01 14:00:00 +0200
 categories:
   - maths
