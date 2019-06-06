@@ -12,14 +12,14 @@ Cet article présente la rétropropagation du gradient dans un réseau neuronal 
 
 Le but est d'optimiser une matrice de poids W pour que la prédiction d'appartenance de X à une classe soit la plus proche de la classe Y connue.
 
-# Présentation du contexte
+## Présentation du contexte
 
-## Graphe
+### Graphe
 
 <br>
 Ce que l'on connait:<br>
 $X$ vecteur d'entrées de dimension (D)<br>
-$y$ classe à laquelle apparatient le vecteur d'entrées, $y$ est un scalaire $\in \{1,\cdots,C\}$. On associe à $y$ un vecteur de dimension C: $Y\_one\_hot$, qui est la version "one hot encoded" de $y$. Tous ses termes sont 0 sauf $Y\_one\_hot[y]=1$<br>
+$y$ classe à laquelle apparatient le vecteur d'entrées, $y$ est un scalaire $\in \{1,\cdots,C\}$. On associe à $y$ un vecteur de dimension C: $$Y\_one\_hot$$, qui est la version "one hot encoded" de $y$. Tous ses termes sont 0 sauf $$Y\_one\_hot[y]=1$$<br>
 <br>
 Ce que l'on cherche:<br>
 $W$ matrice des poids de dimension (D,C). Où C représente le nombre de classes possibles<br>
@@ -34,18 +34,20 @@ $\lambda$ vecteur logits de dimension (C)<br>
 
 $S$ vecteur de dimension (C) qui donne la probabilité d'appartenance de X pour chacune des classes<br>
 
-** 3 ** Fonction de coût: $L = D_{KL}(Y\_one\_hot||S)$ où $Y\_one\_hot$ correspond à la répartition de probabilité pour la classe connue.<br>
+** 3 ** Fonction de coût: $$L = D_{KL}(Y\_one\_hot\|S)$$ où $$Y\_one\_hot$$ correspond à la répartition de probabilité pour la classe connue.<br>
 
 $L$ (Loss) scalaire (1)
 
 
-## Motivation
+### Motivation
 
-Le but est de trouver $$\frac{\partial L}{\partial W}$$ Jacobien généralisé de L par rapport à W, pour pouvoir modifier W en utilisant le taux d'apprentissage:$$ W \leftarrow W + learning\_rate * \frac{\partial L}{\partial W}$$
+Le but est de trouver $$\frac{\partial L}{\partial W}$$ Jacobien généralisé de L par rapport à W, pour pouvoir modifier W en utilisant le taux d'apprentissage:
 
-## La fonction $Softmax$
+$$ W \leftarrow W + learning\_rate * \frac{\partial L}{\partial W}$$
 
-### Définition
+### La fonction $Softmax$
+
+#### Définition
 
 $$
 \begin{align*}
@@ -73,7 +75,7 @@ $$S_i = \frac{e^{a_i}}{ \sum_{k=1}^{N} e^{a_k} }$$  $$\forall i \in \{1,\cdots,N
 
 Par souci de simplification d'écriture on a tendance à nommer de la même manière une fonction et son résultat. $S$ ici est selon le contexte la fonction $softmax$ ou un vecteur de taille N.
 
-### Caractéristiques
+#### Caractéristiques
 
 $$\forall i, S_i \in ]0,1]$$
 
@@ -83,7 +85,7 @@ L'ordre des valeurs de `a` est conservé et la plus haute valeur ressort clairem
 
 Softmax est comme une version "soft" de la fonction maximum, elle fait ressortir le maximum mais n'élimine pas complètement les autres valeurs.
 
-### Instabilité numérique
+#### Instabilité numérique
 
 Le problème du cacul de la valeur de $softmax$ est que l'on divise facilement de très grands nombres entre eux, source d'instabilités numériques. Pour éviter cela on va ajouter une constante judicieusement choisie.
 
@@ -100,8 +102,8 @@ $$\ln C = -\max_j \lambda_j$$
 
 ```python
 import numpy as np
-logits = np.array([123, 456, 789]) # Exemple de 3 classes avec de larges scores
-p = np.exp(logits) / np.sum(np.exp(logits)) # Plante la machine
+logits = np.array([123, 456, 789]) ## Exemple de 3 classes avec de larges scores
+p = np.exp(logits) / np.sum(np.exp(logits)) ## Plante la machine
 ```
 
     /anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:3: RuntimeWarning: invalid value encountered in true_divide
@@ -110,9 +112,9 @@ p = np.exp(logits) / np.sum(np.exp(logits)) # Plante la machine
 
 
 ```python
-# Translation du vecteur logits pour que la plus haute valeur soit 0:
-logits -= np.max(logits) # logits devient [-666, -333, 0]
-p = np.exp(logits) / np.sum(np.exp(logits)) # Fonctionne correctement
+## Translation du vecteur logits pour que la plus haute valeur soit 0:
+logits -= np.max(logits) ## logits devient [-666, -333, 0]
+p = np.exp(logits) / np.sum(np.exp(logits)) ## Fonctionne correctement
 ```
 
 
@@ -132,7 +134,7 @@ my_round(p,3)
 
 Dans notre cas de figure on calculera numériquement $$S=softmax(\hat{\lambda})=softmax(\lambda)$$ où $\hat{\lambda}$ est une version translatée de $\lambda$ pour éviter les instabilités numériques mais qui est égale à $S$. $\hat{\lambda}$ vecteur logits translaté de dimension (C)
 
-# Gradient
+## Gradient
 
 On utilise la loi donnant la dérivée d'une composée de fonctions:
 
@@ -144,16 +146,12 @@ Ce qui nous donne en considérant les dimensions: $$(D,C) =  (C) . (C,D,C)$$
 
 où le "." correspond au produit matriciel généralisé aux tenseurs.
 
-## Jacobien généralisé de $\lambda$ par rapport à $W$
+### Jacobien généralisé de $\lambda$ par rapport à $W$
 
 $$\lambda = X.W$$
 $$J = \frac{\partial \lambda}{\partial W}$$
 
-Dimensions:
-$X(D)\\
-W(D,C)\\
-\lambda (C)\\
-J (C,D,C)$
+Dimensions: X(D) - W(D,C) - $lambda (C)$ - J(C,D,C)
 
 $$J_{ijk} = \frac{\partial \lambda_i}{\partial w_{jk}}$$
 
@@ -172,7 +170,7 @@ J_{ijk} & = \frac{\partial}{\partial w_{jk}}\sum_{l=1}^{D}x_lw_{li}\\
 \end{align*}
 $$
 
-## Jacobien de $L$ par rapport à $W$
+### Jacobien de $L$ par rapport à $W$
 
 $$
 \frac{\partial L}{\partial W} =   \frac{\partial L}{\partial \lambda} . \frac{\partial \lambda}{\partial W}\\
@@ -188,18 +186,18 @@ $$
 Donc sous forme matricielle on obtient: $$
 \frac{\partial L}{\partial W} = X^T.\frac{\partial L}{\partial \lambda}$$
 
-## Jacobien de L par rapport à X
+### Jacobien de L par rapport à X
 
 De même on peut monter: 
 $$
 \frac{\partial L}{\partial X} = \frac{\partial L}{\partial \lambda}.W^T
 $$
 
-## Expression de la dérivée de $L$ par rapport à $\lambda$
+### Expression de la dérivée de $L$ par rapport à $\lambda$
 
-### Fonction de coût
+#### Fonction de coût
 
-$$L = D_{KL}(Y\_one\_hot||S)$$ où $Y\_one\_hot$ correspond à la répartition de probabilité pour la classe connue et S les probabilités de la classe prédite par notre modèle.
+$$L = D_{KL}(Y\_one\_hot\|S)$$ où $$Y\_one\_hot$$ correspond à la répartition de probabilité pour la classe connue et S les probabilités de la classe prédite par notre modèle.
 
 La divergence de Kullback-Leibler $D_{KL}$ correspond à une mesure de la similarité entre deux distributions. On peut l'écrire sous la forme $$D_{KL} = H(p,q)-H(p)$$ où p est la véritable distribution et q la répartition estimée. 
 
@@ -232,7 +230,7 @@ L = D_{KL} & = - ln \frac{e^{\lambda_{y}}}{\sum_j e^{\lambda_j}} \\
 \end{align*}
 $$
 
-### Calcul de la dérivée de L
+#### Calcul de la dérivée de L
 
 Calcul prélimiaire: 
 
@@ -253,7 +251,7 @@ $$
   \end{cases}
 $$  
 
-## Gradients dW et dX
+### Gradients dW et dX
 
 En incorporant cette dernière formule à dW, Jacobien de $L$ par rapport à $W$, on obtient une expression du gradient facilement programmable. 
 
@@ -283,7 +281,7 @@ $$
 \end{align*}
 $$ 
 
-## Références
+### Références
 
 [CS231n: Convolutional Neural Networks for Visual Recognition](http://cs231n.github.io/linear-classify/#softmax)
 
