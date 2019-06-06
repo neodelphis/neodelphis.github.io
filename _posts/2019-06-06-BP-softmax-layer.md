@@ -6,7 +6,6 @@ date:   2019-06-06 10:06:00 +0200
 categories:
   - maths
 ---
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
 
 Rétropropagation du gradient dans le cadre d'une ultime couche $Softmax$
 
