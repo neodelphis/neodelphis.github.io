@@ -141,7 +141,6 @@ h'_i =
 \frac{\partial h_i}{\partial a_j} = 
    e^{a_j} 
 $$
-
 - Lorsque $j = i$
 
 $$
