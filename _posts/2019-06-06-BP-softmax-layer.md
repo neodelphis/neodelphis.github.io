@@ -149,6 +149,7 @@ où le "." correspond au produit matriciel généralisé aux tenseurs.
 ### Jacobien généralisé de $\lambda$ par rapport à $W$
 
 $$\lambda = X.W$$
+
 $$J = \frac{\partial \lambda}{\partial W}$$
 
 Dimensions: X(D) - W(D,C) - $lambda (C)$ - J(C,D,C)
