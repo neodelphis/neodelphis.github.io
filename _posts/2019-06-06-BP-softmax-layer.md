@@ -19,7 +19,7 @@ Le but est d'optimiser une matrice de poids W pour que la prédiction d'apparten
 <br>
 Ce que l'on connait:<br>
 $X$ vecteur d'entrées de dimension (D)<br>
-$y$ classe à laquelle apparatient le vecteur d'entrées, $y$ est un scalaire $\in \{1,\cdots,C\}$. On associe à $y$ un vecteur de dimension C: $$Y\_one\_hot$$, qui est la version "one hot encoded" de $y$. Tous ses termes sont 0 sauf $$Y\_one\_hot[y]=1$$<br>
+$y$ classe à laquelle appartient le vecteur d'entrées, $y$ est un scalaire $\in \{1,\cdots,C\}$. On associe à $y$ un vecteur de dimension C: $$Y\_one\_hot$$, qui est la version "one hot encoded" de $y$. Tous ses termes sont 0 sauf $$Y\_one\_hot[y]=1$$<br>
 <br>
 Ce que l'on cherche:<br>
 $W$ matrice des poids de dimension (D,C). Où C représente le nombre de classes possibles<br>
@@ -87,7 +87,7 @@ Softmax est comme une version "soft" de la fonction maximum, elle fait ressortir
 
 #### Instabilité numérique
 
-Le problème du cacul de la valeur de $softmax$ est que l'on divise facilement de très grands nombres entre eux, source d'instabilités numériques. Pour éviter cela on va ajouter une constante judicieusement choisie.
+Le problème du calcul de la valeur de $softmax$ est que l'on divise facilement de très grands nombres entre eux, source d'instabilités numériques. Pour éviter cela on va ajouter une constante judicieusement choisie.
 
 $$
 \frac{e^{\lambda_{i}}}{\sum_j e^{\lambda_j}}
@@ -233,7 +233,7 @@ $$
 
 #### Calcul de la dérivée de L
 
-Calcul prélimiaire: 
+Calcul préliminaire: 
 
 $$
 \begin{align*}
