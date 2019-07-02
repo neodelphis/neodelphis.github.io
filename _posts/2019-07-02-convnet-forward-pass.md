@@ -9,7 +9,7 @@ categories:
 ---
 Propagation dans une couche convolutive
 
-## Paramètres en entrée et sortie de la couche convolutive
+### Paramètres en entrée et sortie de la couche convolutive
 
 A naive implementation of the forward pass for a convolutional layer.
 
@@ -34,7 +34,7 @@ Returns a tuple of:
 - cache: (x, w, b, conv_param)
 
 
-## Formulation mathématique  pour un filtre $y=f(x,w,b)$
+### Formulation mathématique  pour un filtre $y=f(x,w,b)$
 
 Dimensions simplifiées
 - x : $N \times N$
@@ -45,7 +45,7 @@ Dimensions simplifiées
 Propagation
 $$y_{ij} = \left (\sum_{a=0}^{m-1} \sum_{b=0}^{m-1} \omega_{ab} x_{(i+a)(j+b)}  \right ) + \beta \tag {1}$$
 
-## Cas particulier simple
+### Cas particulier simple
 
 Détail de la construction du produit de convolution simplifié avant généralisation
 
@@ -210,7 +210,7 @@ y
 
 
 
-## Généralisation
+### Généralisation
 
 
 ```python
