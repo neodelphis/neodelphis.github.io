@@ -1,3 +1,4 @@
+---
 layout: post
 mathjax: true
 title:  "Rétro propagation dans une couche convolutive - Draft"
