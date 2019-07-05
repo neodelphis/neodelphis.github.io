@@ -106,11 +106,13 @@ $$
 ## Rétropropagation
 
 On connait le gradient de notre fonction de coût L par rapport à y:
+
 $$
 dy = \frac{\partial L}{\partial y}
 $$
 
 En fait $dy = \frac{\partial L}{\partial y}$, dérivée d'un scalaire par rapport à un vecteur s'écrit avec la notation du Jacobien:
+
 $$
 \begin{align*}
 &
@@ -127,11 +129,14 @@ dy_1 & dy_2 & dy_3
 $$
 
 dy a les mêmes dimensions que y, écriture sous forme vectorielle:
+
 $$
 dy = (dy_1 , dy_2 , dy_3)
 $$
 
-On cherche $$dx=\frac{\partial L}{\partial x},  dw=\frac{\partial L}{\partial w},  db=\frac{\partial L}{\partial b}$$
+On cherche
+
+$$dx=\frac{\partial L}{\partial x},  dw=\frac{\partial L}{\partial w},  db=\frac{\partial L}{\partial b}$$
 
 ### db
 
@@ -308,18 +313,22 @@ $$
 
 ## Propagation
 
-Ce qui nous donne:$$
+Ce qui nous donne:
+
+$$
 y_{11} = w_{11} x_{11} + w_{12} x_{12} + w_{21} x_{21} + w_{22} x_{22} + b\\
 y_{12} = w_{11} x_{12} + w_{12} x_{13} + w_{21} x_{22} + w_{22} x_{23} + b\\
 \cdots 
 $$
 
 En écriture indicielle:
+
 $$y_{ij} = \left (\sum_{k=1}^{2} \sum_{l=1}^{2} w_{kl} x_{i+k-1,j+l-1}  \right ) + b \quad \forall(i,j)\in\{1,2,3\}^2 \tag {2}$$
 
 ## Rétropropagation
 
 On connait:
+
 $$
 dy_{ij} = \frac{\partial L}{\partial y_{ij}}
 $$
@@ -327,9 +336,11 @@ $$
 ### db
 
 En utilisant la convention d'Einstein pour alléger les notations (la répétition d'un indice indique la somme sur l'ensemble de la plage de valeurs de cet indice)
+
 $$db = dy_{ij}\cdot\frac{\partial y_{ij}}{\partial b}$$
 
 On a une double somme sur i et j, et $\forall (i,j)$ on a $\frac{\partial y_{ij}}{\partial b}=1$, donc
+
 $$
 db = \sum_{i=1}^3 \sum_{j=1}^3 dy_{ij}
 $$
@@ -341,10 +352,13 @@ $$dw=\frac{\partial L}{\partial y_{ij}}\cdot \frac{\partial y_{ij}}{\partial w} 
 $$dw_{mn} = dy_{ij}\cdot\frac{\partial y_{ij}}{\partial w_{mn}} \tag{3}$$
 
 On cherche
+
 $$\frac{\partial y_{ij}}{\partial w_{mn}}$$
 
 En incorporant l'équation (2) on obtient:
-$$\frac{\partial y_{ij}}{\partial w_{mn}}
+
+$$
+\frac{\partial y_{ij}}{\partial w_{mn}}
 = 
 \sum_{k=1}^{2} \sum_{l=1}^{2} \frac{\partial w_{kl}}{\partial w_{mn}} x_{i+k-1,j+l-1}
 $$
@@ -352,6 +366,7 @@ $$
 Tous les termes de $\frac{\partial w_{kl}}{\partial w_{mn}}$ sont nuls sauf pour $(k,l) = (m,n)$ où cela vaut 1, cas qui n'apparaît qu'une seule fois dans la double somme.
 
 D'où:
+
 $$
 \frac{\partial y_{ij}}{\partial w_{mn}}
 = 
@@ -375,16 +390,19 @@ Si l'on compare cette équation avec l'équation 2 qui donne la formule d'un pro
 ### dx
 
 En utilisant la loi de composition comme pour (3) on obtient:
+
 $$
 dx_{mn} = dy_{ij}\cdot\frac{\partial y_{ij}}{\partial x_{mn}} \tag{4}
 $$
 
 Cette fois ci on cherche 
+
 $$
 \frac{\partial y_{ij}}{\partial x_{mn}}
 $$
 
 En incorporant l'équation (2) on obtient:
+
 $$\frac{\partial y_{ij}}{\partial x_{mn}}
 = 
 \sum_{k=1}^{2} \sum_{l=1}^{2} w_{kl} \frac{\partial x_{i+k-1,j+l-1}}{\partial x_{mn}}  \tag{5}
@@ -417,6 +435,7 @@ l=n-j+1
 $$
 
 Dans notre exemple on a 
+
 $$
 \begin{align*}
 &m,n \in [1,4] & \text{ entrées }\\
@@ -430,6 +449,7 @@ Donc lorsque l'on fait $k=m-i$, on va sortir un peu de l'intervalle de valeurs, 
 > - Ce changement d'indice correspond à ce qui nommé rot180 du filtre dans les papiers, à détailler?
 
 De nouveau, dans la double somme de (5), on peut avoir une seule dérivée partielle de x qui soit égale à 1, lorsque l'on a (6), donc en remplaçant dans (5):
+
 $$
 \frac{\partial y_{ij}}{\partial x_{mn}}
 = 
@@ -439,11 +459,13 @@ $$
 où $w$ représente notre filtre initial étendu avec des valeurs 0, lorsque l'on sort de l'intervalle de définition
 
 En injectant cette formule dans (4) on obtient:
+
 $$
 dx_{mn} = \sum_{i=1}^3 \sum_{j=1}^3 dy_{ij} \cdot w_{m-i+1,n-j+1} \tag{7}
 $$
 
 Par exemple 
+
 $$
 \begin{align*}
 dx_{11} &= \sum_{i=1}^3 \sum_{j=1}^3 dy_{ij} \cdot w_{2-i,2-j}\\
@@ -458,6 +480,7 @@ dy_{i3} w_{2-i,-1,}\\
 $$
 
 En utilisant $*$ pour notation du produit de convolution, on a:
+
 $$
 dx_{11} = dy * 
 \begin{bmatrix}
@@ -468,6 +491,7 @@ w_{1,1} & 0 & 0 \\
 $$
 
 Valeurs des indices de w pour $dx_{22}$ : $3-i,3-j$
+
 $$
 \begin{bmatrix}
 2,2 & 2,1 & 2,0 \\ 
@@ -477,6 +501,7 @@ $$
 $$
 
 Donc on a un produit de convolution entre dy et une matrice w' de type:
+
 $$
 \begin{bmatrix}
 w_{2,2} & w_{2,1} & 0 \\ 
@@ -486,6 +511,7 @@ w_{1,2} & w_{1,1} & 0 \\
 $$
 
 Autre exemple pour essayer de clarifier les choses: $dx_{43}$, de nouveau on se limite aux valeurs des indices: $4-i,3-j$
+
 $$
 \begin{bmatrix}
 3,2 & 3,1 & 3,0 \\
@@ -503,6 +529,7 @@ w_{1,2} & w_{1,1} & 0
 $$
 
 Et du coup pour finir $dx_{44}$
+
 $$
 \begin{bmatrix}
 0 & 0 & 0 \\
