@@ -1,7 +1,7 @@
 ---
 layout: post
 mathjax: true
-title:  "Rétro propagation dans une couche convolutive"
+title:  "Rétropropagation dans une couche convolutive"
 date:   2019-07-08 12:00:00 +0200
 categories:
   - convnet
