@@ -14,7 +14,7 @@ Rétropropagation dans une couche convolutive
 
 ### Motivation
 
-Le but de cet article est de présenter la rétropropagation du gradient dans une couche convolutive. La sortie de cette couche ira dans une fonction d'activation de type `relu`, et l'on suppose que l'on reçoit le gradient `dy` rétropropagé depuis cette fonction d'activation. Ayant trouvé peu d'informations détaillées sur le processus et les mathématiques sous-jacentes, cet article détaille pas à pas la solution à la mise en place d'une solution informatique pour le calcul de ce gradient. On suppose que le lecteur est déjà familier des notions de propagation et rétropropagation dans les réseaux neuronaux, des graphes de calculs et du calcul des gradients de tenseurs.
+Le but de cet article est de présenter la rétropropagation du gradient dans une couche convolutive. La sortie de cette couche ira dans une fonction d'activation de type `relu`, et l'on suppose que l'on reçoit le gradient `dy` rétropropagé depuis cette fonction d'activation. Ayant trouvé peu d'informations détaillées sur le processus et les mathématiques sous-jacentes, cet article détaille pas à pas les étapes de la mise en place d'une solution informatique pour le calcul de ce gradient. On suppose que le lecteur est déjà familier des notions de propagation et rétropropagation dans les réseaux neuronaux, des graphes de calculs et du calcul des gradients de tenseurs.
 
 ![conv layer graph](/assets/images/conv-forward-bp.jpg)
 
@@ -45,7 +45,7 @@ Entrées:
 
 
 Sortie:
-- out: Données de sortie de dimenstion  (N, F, H', W') où H' and W' sont définis par:
+- out: Données de sortie de dimension  (N, F, H', W') où H' and W' sont définis par:
   - H' = 1 + (H + 2 * pad - HH) / stride
   - W' = 1 + (W + 2 * pad - WW) / stride
 - cache: données mémorisées pour la rétropropagation (x, w, b, conv_param)
@@ -74,7 +74,7 @@ $$y_{ij} = \left (\sum_{k=1}^{HH} \sum_{l=1}^{WW} w_{kl} x'_{si+k-1,sj+l-1}  \ri
 
 $$y_{ij} = \sum_{k} \sum_{l} w_{kl} \cdot x_{i+k-1,j+l-1}  \tag {1}$$
 
-### Rétro propagation
+### Rétropropagation
 
 On connait 
 
@@ -505,7 +505,7 @@ $$
 dx_{mn} = \sum_{i=1}^3 \sum_{j=1}^3 dy_{ij} \cdot w_{m-i+1,n-j+1} \tag{7}
 $$
 
-On va visualiser ce que cela nous donnes sur quelques valeurs choisies pour les indices. Par exemple 
+On va visualiser ce que cela nous donne sur quelques valeurs choisies pour les indices. Par exemple 
 
 $$
 \begin{align*}
@@ -651,7 +651,7 @@ Entrées
 - b: Biais de dimensions (F,)
 
 Sortie:
-- y: Données de sortie de dimenstion  (F, H', W')
+- y: Données de sortie de dimension  (F, H', W')
 
 Les équations mathématiques multiplient les indices et en deviennent difficilement lisibles. Par exemple la propagation dans ce cas de figure donne:
 
@@ -770,7 +770,7 @@ dw error:  1.381022780971562e-10
 db error:  1.1299800330640326e-10
 ```
 
-Erreur proche de 0 à chaque fois, ce qui valide notre algorithme! :)
+Erreur proche de 0 à chaque fois, ce qui valide notre algorithme ! :)
 
 ## Références
 
