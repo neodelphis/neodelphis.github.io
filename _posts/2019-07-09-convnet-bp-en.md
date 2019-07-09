@@ -1,61 +1,69 @@
 ---
 layout: post
 mathjax: true
-title:  "Rétropropagation dans une couche convolutive"
-date:   2019-07-08 12:00:00 +0200
+title:  "Backpropagation in a convolutional layer"
+date:   2019-07-09 12:00:00 +0200
 categories:
   - convnet
   - maths
   - python
+  - english
 ---
-Rétropropagation dans une couche convolutive
+Backpropagation in a convolutional layer
 
 ## Introduction
 
 ### Motivation
 
-Le but de cet article est de présenter la rétropropagation du gradient dans une couche convolutive. La sortie de cette couche ira dans une fonction d'activation de type `relu`, et l'on suppose que l'on reçoit le gradient `dy` rétropropagé depuis cette fonction d'activation. Ayant trouvé peu d'informations détaillées sur le processus et les mathématiques sous-jacentes, cet article détaille pas à pas les étapes de la mise en place d'une solution informatique pour le calcul de ce gradient. On suppose que le lecteur est déjà familier des notions de propagation et rétropropagation dans les réseaux neuronaux, des graphes de calculs et du calcul des gradients de tenseurs.
+The aim of this post is to detail how gradient backpropagation is working in a convolutional layer of a neural network. Typically the output of this layer will be the input of a chosen activation function (`relu`for instance). We are making the assumption that we are given the gradient `dy` backpropagated from this activation function. As I was unable to find on the web a complete, detailed, and "simple" explanation of how it works. I decided to do the maths, trying to understand step by step how it's working on simple examples before generalizing.
+Before further reading, you should be familiar with neural networks, and especially forward pass, backpropagation of gradient in a computational graph and basic linear algebra with tensors. 
+
 
 ![conv layer graph](/assets/images/conv-forward-bp.jpg)
 
-### Notations utilisées
+### Notations
 
-On  note `*` le produit de convolution entre deux tenseurs, typiquement une entrée `x`et un filtre `w`
-- Dans le cas où les tenseurs sont de même taille et avec une ou deux dimensions, cela correspond à la somme de produits de chacun des éléments terme à terme
-- Si le filtre `w` est plus petit que `x`, on obtient une "carte d'activation" `y` où chacun des termes correspond au produit de convolution d'un sous ensemble de `x` avec `w`, `w` se déplaçant sur toute la surface de `x`.
-- Si `x` et `w` ont plus de deux dimensions on ne considère que les deux dernières dimensions pour effectuer les déplacements du sous ensemble choisi, les produits de convolution se feront sur une dimension supplementaire correspondant à la profondeur.
+`*` will refer to the convolutional product of 2 tensors in the case of a neural network (an input `x` and a filter `w`).
+- When `x`and `w` are matrices:
+- if `x`and `w` share the same shape, `x*w` will be a scalar equal to the sum across the results of the element-wise multiplication between the arrays.
+- if `w`is smaller the `x`, we will obtain an activation map `y` where each value is the convolutional product of a sub-region of x with the sizes of w. This sub-region activated by the filter is sliding all across the input array `x`.
+- if `x`and `w` have more than 2 dimensions, we are considering the last 3 ones for the convolutional product, and the last 2 ones for the highlighted sliding area (we just add one depth to our matrix)
 
-Les variables et notations utilisées correspondent à l'[excellent cours de Stanford](http://cs231n.stanford.edu/) et aux exercices de l'[assignment 2](http://cs231n.github.io/assignments2019/assignment2/). Un descriptif du fonctionnement de la propagation dans une couche convolutive est proposé dans cette [vidéo](https://www.youtube.com/watch?v=bNb2fEVKeEo&list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv&index=5) et un petit exemple de mise en application dans cet [article](https://neodelphis.github.io/convnet/python/2019/07/02/convnet-forward-pass.html).
+Notations and variables are the same as the ones used in the [excellent Stanford course](http://cs231n.stanford.edu/) on convolutional neural networks for visual recognition and especially the ones of [assignment 2](http://cs231n.github.io/assignments2019/assignment2/). Details on convolutional layer and forwrd pass will be found in this [video](https://www.youtube.com/watch?v=bNb2fEVKeEo&list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv&index=5) and an instance of a naive implementation of the forward pass [post](https://neodelphis.github.io/convnet/python/2019/07/02/convnet-forward-pass.html).
 
 ![conv layer diagram](/assets/images/conv-layer-diagram.jpg)
 
-### Objectif
+### Goal
 
-On cherche à calculer comment se rétropropage le gradient dans le cas suivant:
+Our goal is to find out how gradient is propagating backwards in a convolutional layer. The forward pass is defined like this:
 
-On dispose d'une entrée x de N points, chacun avec C canaux, une hauteur de H, et une largeur de W. On effectue un produit de convolution avec F filtres différents w, sur l'intégralité de la profondeur C, chaque filtre a pour hauteur HH et comme largeur WW.
+The input consists of N data points, each with C channels, height H and width W. We convolve each input with F different filters, where each filter spans all C channels and has height HH and width WW.
 
-Entrées:
-- x: données d'entrée de dimensions (N, C, H, W)
-- w: poids de filtres de dimensions (F, C, HH, WW)
-- b: Biais de dimensions (F,)
-- conv_param: un dictionnaire de paramètres avec les entrées suivantes:
-  - 'stride': Le nombre de pixel entre deux zones successives d'application du filtre (identiques en largeur et en hauteur).
-  - 'pad': Le nombre de pixel pour effectuer un remplissage à 0 ("0-padding") autour de l'entrée. Ce remplissage est fait de manière symétrique selon les différents axes.
+Input:
+- x: Input data of shape (N, C, H, W)
+- w: Filter weights of shape (F, C, HH, WW)
+- b: Biases, of shape (F,)
+- conv_param: A dictionary with the following keys:
+  - 'stride': The number of pixels between adjacent receptive fields in the
+    horizontal and vertical directions.
+  - 'pad': The number of pixels that will be used to zero-pad the input. 
+    
+
+During padding, 'pad' zeros should be placed symmetrically (i.e equally on both sides) along the height and width axes of the input.
+
+Returns a tuple of:
+- out: Output data, of shape (N, F, H', W') where H' and W' are given by
+  H' = 1 + (H + 2 * pad - HH) / stride
+  W' = 1 + (W + 2 * pad - WW) / stride
+- cache: (x, w, b, conv_param)
 
 
-Sortie:
-- out: Données de sortie de dimension  (N, F, H', W') où H' and W' sont définis par:
-  - H' = 1 + (H + 2 * pad - HH) / stride
-  - W' = 1 + (W + 2 * pad - WW) / stride
-- cache: données mémorisées pour la rétropropagation (x, w, b, conv_param)
 
+### Forward pass
 
-### Propagation
+#### Genral case (simplified N=1, C=1, F=1)
 
-#### Cas général simplifié où N=1, C=1, F=1
-
-N=1 une seule entrée, C=1 un seul canal, F=1 un seul filtre.
+N=1 one input, C=1 one channel, F=1 one filter.
 
 ![conv 2D](/assets/images/conv-2d.jpg)
 
@@ -70,23 +78,24 @@ $\forall (i,j) \in [1,H'] \times [1,W']$
 
 $$y_{ij} = \left (\sum_{k=1}^{HH} \sum_{l=1}^{WW} w_{kl} x'_{si+k-1,sj+l-1}  \right ) + b \tag {1}$$
 
-#### Cas particulier: stride=1, pad=0, et pas de biais
+#### Specific case: stride=1, pad=0, and no bias.
 
 $$y_{ij} = \sum_{k} \sum_{l} w_{kl} \cdot x_{i+k-1,j+l-1}  \tag {1}$$
 
-### Rétropropagation
+### Backpropagation
 
-On connait 
+We know:
 
 $dy = \left(\frac{\partial L}{\partial y_{ij}}\right)$
 
-On cherche $dx$, $d\omega$ et $d\beta$, dérivées partielles respectives de notre fonction de coût dont le gradient a été rétropropagé jusqu'à y.
+We want to compute $dx$, $d\omega$ et $d\beta$, partial derivatives of our cost funcion L. We suppose that the gradient of this function has been backpropagated till y.
 
-## Cas d'un vecteur d'entrée x à 1 dimension
+## Trivial case: input vector x of 1 dimension
 
-Pour essayer d'avoir une première intuition du résultat et voir comment les choses se mettent en place, on va se limiter dans un premier temps à un exemple très simple.
+We are looking for an intuition of how it works on an easy setup and later on we will try to generalize.
 
-### En entrée
+
+### Input
 
 $$
 x = 
@@ -108,7 +117,7 @@ $$
 
 $$b$$
 
-### En sortie
+### Output
 
 $$
 y = 
@@ -119,7 +128,7 @@ y_3
 \end{bmatrix}
 $$
 
-### Propagation - convolution avec le filtre w, stride = 1, padding = 0
+### Forward pass - convolution with one filtre w, stride = 1, padding = 0
 
 $$
 y_1 = w_1 x_1 + w_2 x_2 + b\\
@@ -127,15 +136,15 @@ y_2 = w_1 x_2 + w_2 x_3 + b \tag{1}\\
 y_3 = w_1 x_3 + w_2 x_4 + b
 $$
 
-### Rétropropagation
+### Backpropagation
 
-On connait le gradient de notre fonction de coût L par rapport à y:
+We know the gradient of our cost function L with respect to y:
 
 $$
 dy = \frac{\partial L}{\partial y}
 $$
 
-En fait $dy = \frac{\partial L}{\partial y}$, dérivée d'un scalaire par rapport à un vecteur s'écrit avec la notation du Jacobien:
+This can be writtent with the Jacobian notation:
 
 $$
 \begin{align*}
@@ -152,13 +161,13 @@ dy_1 & dy_2 & dy_3
 \end{align*}
 $$
 
-dy a les mêmes dimensions que y, écriture sous forme vectorielle:
+dy and y share the same shape:
 
 $$
 dy = (dy_1 , dy_2 , dy_3)
 $$
 
-On cherche 
+We are looking for
 
 $$dx=\frac{\partial L}{\partial x},  dw=\frac{\partial L}{\partial w},  db=\frac{\partial L}{\partial b}$$
 
@@ -166,7 +175,7 @@ $$dx=\frac{\partial L}{\partial x},  dw=\frac{\partial L}{\partial w},  db=\frac
 
 $$db=\frac{\partial L}{\partial y}\cdot \frac{\partial y}{\partial b} = dy\cdot\frac{\partial y}{\partial b}$$
 
-Et la composée de fonction s'écrit sous la forme (en incorporant la formule de propagation (1)):
+Using the chain rule and the forward pass formula (1), wa can write:
 
 $$
 db
