@@ -61,7 +61,7 @@ Returns a tuple of:
 
 ### Forward pass
 
-#### Genral case (simplified N=1, C=1, F=1)
+#### Generic case (simplified with N=1, C=1, F=1)
 
 N=1 one input, C=1 one channel, F=1 one filter.
 
