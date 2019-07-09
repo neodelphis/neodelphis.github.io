@@ -7,7 +7,7 @@ categories:
   - convnet
   - python
 ---
-Propagation dans une couche convolutive
+Propagation dans une couche convolutive - draft
 
 ### Paramètres en entrée et sortie de la couche convolutive
 
