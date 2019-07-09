@@ -68,9 +68,9 @@ N=1 one input, C=1 one channel, F=1 one filter.
 ![conv 2D](/assets/images/conv-2d.jpg)
 
 - $x$ : $H \times W$
-- $x' = x$ avec padding
+- $x' = x$ with padding
 - $w$ : $HH \times WW$
-- $b$ biais : scalaire
+- $b$ bias : scalar
 - $y$ : $H'\times W'$ 
 - stride $s$
 
@@ -88,9 +88,9 @@ We know:
 
 $dy = \left(\frac{\partial L}{\partial y_{ij}}\right)$
 
-We want to compute $dx$, $d\omega$ et $d\beta$, partial derivatives of our cost funcion L. We suppose that the gradient of this function has been backpropagated till y.
+We want to compute $dx$, $d\omega$ and $d\beta$, partial derivatives of our cost funcion L. We suppose that the gradient of this function has been backpropagated till y.
 
-## Trivial case: input vector x of 1 dimension
+## Trivial case: input x is a vector (1 dimension)
 
 We are looking for an intuition of how it works on an easy setup and later on we will try to generalize.
 
@@ -144,7 +144,7 @@ $$
 dy = \frac{\partial L}{\partial y}
 $$
 
-This can be writtent with the Jacobian notation:
+This can be written with the Jacobian notation:
 
 $$
 \begin{align*}
@@ -238,7 +238,7 @@ dw_1 = x_1 dy_1 + x_2 dy_2 + x_3 dy_3 \\
 dw_2 = x_2 dy_1 + x_3 dy_2 + x_4 dy_3
 $$
 
-On peut remarquer que dw correspond au produit de convolution de x avec dy comme filtre, à voir si cela se généralise avec une dimension supplémentaire.
+We can notice that dw is a convolutional product of the input x with a filter dy. Let's see if it's still valid with a added dimension.
 
 $$
 dw = 
@@ -289,7 +289,7 @@ $$
 \end{align*}
 $$
 
-Donne encore un produit de convolution, un peu particulier cette fois, il faudrait considérer dy avec un padding à 0 de taille 1, et en faire le produit convolutif avec un filtre w inversé du type $(w_2, w_1)$
+Once again, we have a convolutional product. A little bit more complex this time. We should consider an input dy with a 0-padding of size 1 convolved with an "inverted" filter w like $(w_2, w_1)$
 
 $$
 dx = 
@@ -307,11 +307,12 @@ w_1
 \end{bmatrix}
 $$
 
-On va essayer de généraliser ces résultats en choisissant comme x et w des matrices de petites tailles.
+Next step will be to have a look on how it works on small matrices.
 
-## Cas d'un vecteur d'entrée x à 2 dimensions
 
-### En entrée
+## Input x is a matrix (2 dimensions)
+
+### Input
 
 $$
 x = 
@@ -333,9 +334,9 @@ $$
 
 $$b$$
 
-### En sortie
+### Output
 
-De nouveau on va prendre le cas le plus simple, stride de 1 et pas de padding. Donc $y$ aura pour dimension $3 \times 3$
+Once again, we will choose the easiest case: stride = 1 and no padding. Shape of y will be (3,3)
 
 $$
 y = 
@@ -346,9 +347,9 @@ y_{31} &y_{32} &y_{33}
 \end{bmatrix}
 $$
 
-### Propagation
+### Forwad pass
 
-Ce qui nous donne:
+We will have:
 
 $$
 y_{11} = w_{11} x_{11} + w_{12} x_{12} + w_{21} x_{21} + w_{22} x_{22} + b\\
@@ -356,13 +357,13 @@ y_{12} = w_{11} x_{12} + w_{12} x_{13} + w_{21} x_{22} + w_{22} x_{23} + b\\
 \cdots 
 $$
 
-En écriture indicielle:
+Written with subscripts:
 
 $$y_{ij} = \left (\sum_{k=1}^{2} \sum_{l=1}^{2} w_{kl} x_{i+k-1,j+l-1}  \right ) + b \quad \forall(i,j)\in\{1,2,3\}^2 \tag {2}$$
 
-### Rétropropagation
+### Backpropagation
 
-On connait:
+We know:
 
 $$
 dy_{ij} = \frac{\partial L}{\partial y_{ij}}
@@ -370,11 +371,15 @@ $$
 
 #### db
 
-En utilisant la convention d'Einstein pour alléger les notations (la répétition d'un indice indique la somme sur l'ensemble de la plage de valeurs de cet indice)
+Using the Einstein convention to alleviate the formulas (when an index variable appears twice in a multiplication, it implies summation of that term over all the values of the index)
 
 $$db = dy_{ij}\cdot\frac{\partial y_{ij}}{\partial b}$$
 
-On a une double somme sur i et j, et $\forall (i,j)$ on a $\frac{\partial y_{ij}}{\partial b}=1$, donc
+Summation on i and j. And we have:
+
+$$
+\forall (i,j) \quad \frac{\partial y_{ij}}{\partial b}=1
+$$
 
 $$
 db = \sum_{i=1}^3 \sum_{j=1}^3 dy_{ij}
@@ -386,11 +391,11 @@ $$dw=\frac{\partial L}{\partial y_{ij}}\cdot \frac{\partial y_{ij}}{\partial w} 
 
 $$dw_{mn} = dy_{ij}\cdot\frac{\partial y_{ij}}{\partial w_{mn}} \tag{3}$$
 
-On cherche
+We are looking for
 
 $$\frac{\partial y_{ij}}{\partial w_{mn}}$$
 
-En incorporant l'équation (2) on obtient:
+Using the formula (2) we have:
 
 $$
 \frac{\partial y_{ij}}{\partial w_{mn}}
@@ -398,9 +403,15 @@ $$
 \sum_{k=1}^{2} \sum_{l=1}^{2} \frac{\partial w_{kl}}{\partial w_{mn}} x_{i+k-1,j+l-1}
 $$
 
-Tous les termes $\frac{\partial w_{kl}}{\partial w_{mn}}$ sont nuls sauf pour $(k,l) = (m,n)$ où cela vaut 1, cas qui n'apparaît qu'une seule fois dans la double somme.
+All terms 
 
-D'où:
+$$
+\frac{\partial w_{kl}}{\partial w_{mn}} = 0
+$$
+
+Except for $(k,l) = (m,n)$ where it's 1, case occuring just once in the double sum.
+
+Hence:
 
 $$
 \frac{\partial y_{ij}}{\partial w_{mn}}
@@ -408,7 +419,7 @@ $$
 x_{i+k-1,j+l-1}
 $$
 
-En remplaçant dans (3) on obtient:
+Using formula (3) we now have:
 
 $$dw_{mn} = dy_{ij} \cdot x_{i+k-1,j+l-1}$$
 
@@ -416,7 +427,7 @@ $$
 \Rightarrow dw_{mn} = \sum_{i=1}^3 \sum_{j=1}^3 dy_{ij} \cdot x_{i+k-1,j+l-1}
 $$
 
-Si l'on compare cette équation avec l'équation 2 qui donne la formule d'un produit de convolution, on retrouve une structure similaire où dy joue le rôle de filtre que l'on applique sur x.
+If we compare this equation with formula (1) giving the result of a convolutional product, we can distinguish a similar pattern where dy is a filter applied on an input x.
 
 $$
 dw = 

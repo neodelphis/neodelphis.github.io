@@ -300,7 +300,7 @@ $$
 
 On va essayer de généraliser ces résultats en choisissant comme x et w des matrices de petites tailles.
 
-## Cas d'un vecteur d'entrée x à 2 dimensions
+## Cas d'une entrée x à 2 dimensions
 
 ### En entrée
 
