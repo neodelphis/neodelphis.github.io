@@ -128,7 +128,7 @@ y_3
 \end{bmatrix}
 $$
 
-### Forward pass - convolution with one filtre w, stride = 1, padding = 0
+### Forward pass - convolution with one filter w, stride = 1, padding = 0
 
 $$
 y_1 = w_1 x_1 + w_2 x_2 + b\\
