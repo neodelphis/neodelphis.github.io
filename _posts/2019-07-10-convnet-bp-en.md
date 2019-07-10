@@ -670,7 +670,7 @@ $$
 
 ## Taking depth into account
 
-Things are becoming slightly more complex when we try to take depth into account (C channels for input X, and f distinct filters for w)
+Things are becoming slightly more complex when we try to take depth into account (C channels for input x, and F distinct filters for w)
 
 Inputs
 - x: shape (C, H, W)
@@ -702,7 +702,7 @@ $$
 
 $$dw_{fckl} = dy_{fij}\cdot\frac{\partial y_{fij}}{\partial w_{fckl}}$$
 
-Using (9), as the double sum does not use dy indices, we can write (using a mix of sum and Einstein notation):
+Using (9), as the double sum does not use dy indices, we can write:
 
 $$\frac{\partial y_{fij}}{\partial w_{fckl}} = x_{c,i+k-1,j+l-1}$$
 

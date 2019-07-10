@@ -643,7 +643,7 @@ $$
 
 ## Cas général et prise en compte de la profondeur
 
-Les choses se complexifient encore un peu plus lorsque l'on cherche à prendre en compte la profondeur de c canaux de x et celle de f filtres de y.
+Les choses se complexifient encore un peu plus lorsque l'on cherche à prendre en compte la profondeur de C canaux de x et celle de F filtres de y.
 
 Entrées
 - x: données d'entrée de dimensions (C, H, W)
@@ -671,7 +671,7 @@ $$
 
 $$dw_{fckl} = dy_{fij}\cdot\frac{\partial y_{fij}}{\partial w_{fckl}}$$
 
-En injectant (9), comme la double somme n'est pas faite sur les indices de dy, on peut écrire (en mélangeant un peu les deux notations sommation et Einstein):
+En injectant (9), comme la double somme n'est pas faite sur les indices de dy, on peut écrire:
 
 $$\frac{\partial y_{fij}}{\partial w_{fckl}} = x_{c,i+k-1,j+l-1}$$
 
