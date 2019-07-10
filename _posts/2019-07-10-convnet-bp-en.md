@@ -175,7 +175,7 @@ $$dx=\frac{\partial L}{\partial x},  dw=\frac{\partial L}{\partial w},  db=\frac
 
 $$db=\frac{\partial L}{\partial y}\cdot \frac{\partial y}{\partial b} = dy\cdot\frac{\partial y}{\partial b}$$
 
-Using the chain rule and the forward pass formula (1), wa can write:
+Using the chain rule and the forward pass formula (1), we can write:
 
 $$
 db
@@ -409,7 +409,7 @@ $$
 \frac{\partial w_{kl}}{\partial w_{mn}} = 0
 $$
 
-Except for $(k,l) = (m,n)$ where it's 1, case occuring just once in the double sum.
+Except for $(k,l) = (m,n)$ where it's 1, case occurring just once in the double sum.
 
 Hence:
 
@@ -515,7 +515,7 @@ $$
 
 In order to keep confidence in formula (7), we choose to extend the definition of matrix $w$ with $0$ values as soon as indices will go out of the defined range.
 
-Once agin in the double sum (7), we only have once partial derivative of x equals 1. So, using (7) and (8):
+Once again in the double sum (7), we only have once partial derivative of x equals 1. So, using (7) and (8):
 
 $$
 \frac{\partial y_{ij}}{\partial x_{mn}}
