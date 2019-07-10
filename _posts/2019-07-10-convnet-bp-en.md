@@ -80,7 +80,7 @@ $$y_{ij} = \left (\sum_{k=1}^{HH} \sum_{l=1}^{WW} w_{kl} x'_{si+k-1,sj+l-1}  \ri
 
 #### Specific case: stride=1, pad=0, and no bias.
 
-$$y_{ij} = \sum_{k} \sum_{l} w_{kl} \cdot x_{i+k-1,j+l-1}  \tag {1}$$
+$$y_{ij} = \sum_{k} \sum_{l} w_{kl} \cdot x_{i+k-1,j+l-1}  \tag {2}$$
 
 ### Backpropagation
 
@@ -132,7 +132,7 @@ $$
 
 $$
 y_1 = w_1 x_1 + w_2 x_2 + b\\
-y_2 = w_1 x_2 + w_2 x_3 + b \tag{1}\\
+y_2 = w_1 x_2 + w_2 x_3 + b \tag{3}\\
 y_3 = w_1 x_3 + w_2 x_4 + b
 $$
 
@@ -359,7 +359,7 @@ $$
 
 Written with subscripts:
 
-$$y_{ij} = \left (\sum_{k=1}^{2} \sum_{l=1}^{2} w_{kl} x_{i+k-1,j+l-1}  \right ) + b \quad \forall(i,j)\in\{1,2,3\}^2 \tag {2}$$
+$$y_{ij} = \left (\sum_{k=1}^{2} \sum_{l=1}^{2} w_{kl} x_{i+k-1,j+l-1}  \right ) + b \quad \forall(i,j)\in\{1,2,3\}^2 \tag {4}$$
 
 ### Backpropagation
 
@@ -389,13 +389,13 @@ $$
 
 $$dw=\frac{\partial L}{\partial y_{ij}}\cdot \frac{\partial y_{ij}}{\partial w} = dy\cdot\frac{\partial y}{\partial w}$$
 
-$$dw_{mn} = dy_{ij}\cdot\frac{\partial y_{ij}}{\partial w_{mn}} \tag{3}$$
+$$dw_{mn} = dy_{ij}\cdot\frac{\partial y_{ij}}{\partial w_{mn}} \tag{5}$$
 
 We are looking for
 
 $$\frac{\partial y_{ij}}{\partial w_{mn}}$$
 
-Using the formula (2) we have:
+Using the formula (4) we have:
 
 $$
 \frac{\partial y_{ij}}{\partial w_{mn}}
@@ -451,10 +451,10 @@ $$
 
 #### dx
 
-Using the chaine rule as we did for (3), we have:
+Using the chaine rule as we did for (5), we have:
 
 $$
-dx_{mn} = dy_{ij}\cdot\frac{\partial y_{ij}}{\partial x_{mn}} \tag{4}
+dx_{mn} = dy_{ij}\cdot\frac{\partial y_{ij}}{\partial x_{mn}} \tag{6}
 $$
 
 This time, we are looking for
@@ -463,12 +463,12 @@ $$
 \frac{\partial y_{ij}}{\partial x_{mn}}
 $$
 
-Using equation (2):
+Using equation (4):
 
 $$
 \frac{\partial y_{ij}}{\partial x_{mn}}
 = 
-\sum_{k=1}^{2} \sum_{l=1}^{2} w_{kl} \frac{\partial x_{i+k-1,j+l-1}}{\partial x_{mn}}  \tag{5}
+\sum_{k=1}^{2} \sum_{l=1}^{2} w_{kl} \frac{\partial x_{i+k-1,j+l-1}}{\partial x_{mn}}  \tag{7}
 $$
 
 We now have:
@@ -494,7 +494,7 @@ $$
 k=m-i+1\\
 l=n-j+1
 \end{cases}
-\tag{6}
+\tag{8}
 $$
 
 In our example, range sets for indices are:
@@ -513,9 +513,9 @@ $$
 (m-i+1) \in [-1,4]
 $$
 
-In order to keep confidence in formula (5), we choose to extend the definition of matrix $w$ with $0$ values as soon as indices will go out of the defined range.
+In order to keep confidence in formula (7), we choose to extend the definition of matrix $w$ with $0$ values as soon as indices will go out of the defined range.
 
-Once agin in the double sum (5), we only have once partial derivative of x equals 1. So, using (6) and (5):
+Once agin in the double sum (7), we only have once partial derivative of x equals 1. So, using (7) and (8):
 
 $$
 \frac{\partial y_{ij}}{\partial x_{mn}}
@@ -525,10 +525,10 @@ $$
 
 where $w$ is our 0-extended initial filter
 
-Injecting this formula in (4) we obtain:
+Injecting this formula in (6) we obtain:
 
 $$
-dx_{mn} = \sum_{i=1}^3 \sum_{j=1}^3 dy_{ij} \cdot w_{m-i+1,n-j+1} \tag{7}
+dx_{mn} = \sum_{i=1}^3 \sum_{j=1}^3 dy_{ij} \cdot w_{m-i+1,n-j+1} \tag{9}
 $$
 
 Lets visualize it on several chosen values for the indices.
@@ -626,7 +626,7 @@ w_{12} & w_{11} \\
 \end{bmatrix}
 $$
 
-$$dx = dy\_0 * w' \tag{8}$$ 
+$$dx = dy\_0 * w'$$ 
 
 ### Summary of backprop equations
 
@@ -683,7 +683,7 @@ Outputs:
 Maths formulas see many indices emerging, making them more difficult to read. The forward pass formula in our example will be:
 
 $$
-y_{fij} = \sum_{k} \sum_{l} w_{fckl} \cdot x_{c,i+k-1,j+l-1} +b_f  \tag {9}
+y_{fij} = \sum_{k} \sum_{l} w_{fckl} \cdot x_{c,i+k-1,j+l-1} +b_f  \tag {10}
 $$
 
 ### db
@@ -702,7 +702,7 @@ $$
 
 $$dw_{fckl} = dy_{fij}\cdot\frac{\partial y_{fij}}{\partial w_{fckl}}$$
 
-Using (9), as the double sum does not use dy indices, we can write:
+Using (10), as the double sum does not use dy indices, we can write:
 
 $$\frac{\partial y_{fij}}{\partial w_{fckl}} = x_{c,i+k-1,j+l-1}$$
 
