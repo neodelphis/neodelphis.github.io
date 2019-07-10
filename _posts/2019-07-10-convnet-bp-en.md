@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title:  "Backpropagation in a convolutional layer"
-date:   2019-07-10 12:00:00 +0200
+date:   2019-07-10 09:00:00 +0200
 categories:
   - convnet
   - maths
@@ -812,6 +812,7 @@ Almost 0 each time, everything seems tobe OK! :)
 - [Convolutional neural network, forward pass](https://www.youtube.com/watch?v=bNb2fEVKeEo&list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv&index=5)
 - [Convolution Layer : Naive implementation of the forward pass](https://neodelphis.github.io/convnet/python/2019/07/02/convnet-forward-pass.html).
 - [Backpropagation In Convolutional Neural Networks](https://www.jefkine.com/general/2016/09/05/backpropagation-in-convolutional-neural-networks/)
+- [Cet article en français](https://neodelphis.github.io/convnet/maths/python/2019/07/08/convnet-bp.html)
 
 
 Comments are welcome to improve this post, feel free to contact me!

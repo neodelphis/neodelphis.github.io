@@ -779,5 +779,6 @@ Erreur proche de 0 à chaque fois, ce qui valide notre algorithme ! :)
 - [Réseaux convolutionnels](https://www.youtube.com/watch?v=bNb2fEVKeEo&list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv&index=5)
 - [Mise en application de la propagation](https://neodelphis.github.io/convnet/python/2019/07/02/convnet-forward-pass.html).
 - [Backpropagation In Convolutional Neural Networks](https://www.jefkine.com/general/2016/09/05/backpropagation-in-convolutional-neural-networks/)
+- [This post in english](https://neodelphis.github.io/convnet/maths/python/english/2019/07/10/convnet-bp-en.html)
 
 
