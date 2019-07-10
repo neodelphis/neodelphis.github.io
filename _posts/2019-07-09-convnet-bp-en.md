@@ -23,13 +23,13 @@ Before further reading, you should be familiar with neural networks, and especia
 
 ### Notations
 
-`*` will refer to the convolutional product of 2 tensors in the case of a neural network (an input `x` and a filter `w`).
+`*` will refer to the convolution of 2 tensors in the case of a neural network (an input `x` and a filter `w`).
 - When `x`and `w` are matrices:
 - if `x`and `w` share the same shape, `x*w` will be a scalar equal to the sum across the results of the element-wise multiplication between the arrays.
-- if `w`is smaller the `x`, we will obtain an activation map `y` where each value is the convolutional product of a sub-region of x with the sizes of w. This sub-region activated by the filter is sliding all across the input array `x`.
-- if `x`and `w` have more than 2 dimensions, we are considering the last 3 ones for the convolutional product, and the last 2 ones for the highlighted sliding area (we just add one depth to our matrix)
+- if `w`is smaller the `x`, we will obtain an activation map `y` where each value is the predefined convolution operation of a sub-region of x with the sizes of w. This sub-region activated by the filter is sliding all across the input array `x`.
+- if `x`and `w` have more than 2 dimensions, we are considering the last 3 ones for the convolution, and the last 2 ones for the highlighted sliding area (we just add one depth to our matrix)
 
-Notations and variables are the same as the ones used in the [excellent Stanford course](http://cs231n.stanford.edu/) on convolutional neural networks for visual recognition and especially the ones of [assignment 2](http://cs231n.github.io/assignments2019/assignment2/). Details on convolutional layer and forwrd pass will be found in this [video](https://www.youtube.com/watch?v=bNb2fEVKeEo&list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv&index=5) and an instance of a naive implementation of the forward pass [post](https://neodelphis.github.io/convnet/python/2019/07/02/convnet-forward-pass.html).
+Notations and variables are the same as the ones used in the [excellent Stanford course](http://cs231n.stanford.edu/) on convolutional neural networks for visual recognition and especially the ones of [assignment 2](http://cs231n.github.io/assignments2019/assignment2/). Details on convolutional layer and forward pass will be found in this [video](https://www.youtube.com/watch?v=bNb2fEVKeEo&list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv&index=5) and an instance of a naive implementation of the forward pass [post](https://neodelphis.github.io/convnet/python/2019/07/02/convnet-forward-pass.html).
 
 ![conv layer diagram](/assets/images/conv-layer-diagram.jpg)
 
@@ -88,7 +88,7 @@ We know:
 
 $dy = \left(\frac{\partial L}{\partial y_{ij}}\right)$
 
-We want to compute $dx$, $d\omega$ and $d\beta$, partial derivatives of our cost funcion L. We suppose that the gradient of this function has been backpropagated till y.
+We want to compute $dx$, $dw$ and $db$, partial derivatives of our cost funcion L. We suppose that the gradient of this function has been backpropagated till y.
 
 ## Trivial case: input x is a vector (1 dimension)
 
@@ -238,7 +238,7 @@ dw_1 = x_1 dy_1 + x_2 dy_2 + x_3 dy_3 \\
 dw_2 = x_2 dy_1 + x_3 dy_2 + x_4 dy_3
 $$
 
-We can notice that dw is a convolutional product of the input x with a filter dy. Let's see if it's still valid with a added dimension.
+We can notice that dw is a convolution of the input x with a filter dy. Let's see if it's still valid with a added dimension.
 
 $$
 dw = 
@@ -289,7 +289,7 @@ $$
 \end{align*}
 $$
 
-Once again, we have a convolutional product. A little bit more complex this time. We should consider an input dy with a 0-padding of size 1 convolved with an "inverted" filter w like $(w_2, w_1)$
+Once again, we have a convolution. A little bit more complex this time. We should consider an input dy with a 0-padding of size 1 convolved with an "inverted" filter w like $(w_2, w_1)$
 
 $$
 dx = 
@@ -427,7 +427,7 @@ $$
 \Rightarrow dw_{mn} = \sum_{i=1}^3 \sum_{j=1}^3 dy_{ij} \cdot x_{i+k-1,j+l-1}
 $$
 
-If we compare this equation with formula (1) giving the result of a convolutional product, we can distinguish a similar pattern where dy is a filter applied on an input x.
+If we compare this equation with formula (1) giving the result of a convolution, we can distinguish a similar pattern where dy is a filter applied on an input x.
 
 $$
 dw = 
@@ -451,19 +451,19 @@ $$
 
 #### dx
 
-En utilisant la loi de composition comme pour (3) on obtient:
+Using the chaine rule as we did for (3), we have:
 
 $$
 dx_{mn} = dy_{ij}\cdot\frac{\partial y_{ij}}{\partial x_{mn}} \tag{4}
 $$
 
-Cette fois ci on cherche 
+This time, we are looking for
 
 $$
 \frac{\partial y_{ij}}{\partial x_{mn}}
 $$
 
-En incorporant l'équation (2) on obtient:
+Using equation (2):
 
 $$
 \frac{\partial y_{ij}}{\partial x_{mn}}
@@ -471,7 +471,7 @@ $$
 \sum_{k=1}^{2} \sum_{l=1}^{2} w_{kl} \frac{\partial x_{i+k-1,j+l-1}}{\partial x_{mn}}  \tag{5}
 $$
 
-On a 
+We now have:
 
 $$
 \frac{\partial x_{i+k,j+l}}{\partial x_{mn}}  = 
@@ -497,19 +497,25 @@ l=n-j+1
 \tag{6}
 $$
 
-Dans notre exemple on a 
+In our example, range sets for indices are:
 
 $$
 \begin{align*}
-&m,n \in [1,4] & \text{ entrées }\\
-&k,l \in [1,2] & \text{ filtres }\\
-&i,j \in [1,3] & \text{ sorties }
+&m,n \in [1,4] & \text{ inputs }\\
+&k,l \in [1,2] & \text{ filters }\\
+&i,j \in [1,3] & \text{ outputs }
 \end{align*}
 $$
 
-Donc lorsque l'on fait $k=m-i$, on va sortir un peu de l'intervalle de valeurs, $(m-i+1) \in [-1,4]$, donc pour garder la cohérence dans la formule (5) on va étendre la matrice $w$ avec des $0$ dès que les valeurs des indices sortiront de l'intervalle de définition.
+When we set $k=m-i+1$, we are going to be out of the defined boundaries:
 
-De nouveau, dans la double somme de (5), on peut avoir une seule dérivée partielle de x qui soit égale à 1, lorsque l'on a (6), donc en remplaçant dans (5):
+$$
+(m-i+1) \in [-1,4]
+$$
+
+In order to keep confidence in formula (5), we choose to extend the definition of matrix $w$ with $0$ values as soon as indices will go out of the defined range.
+
+Once agin in the double sum (5), we only have once partial derivative of x equals 1. So, using (6) and (5):
 
 $$
 \frac{\partial y_{ij}}{\partial x_{mn}}
@@ -517,15 +523,16 @@ $$
 w_{m-i+1,n-j+1}
 $$
 
-où $w$ représente notre filtre initial étendu avec des 0, lorsque l'on sort de son intervalle de définition.
+where $w$ is our 0-extended initial filter
 
-En injectant cette formule dans (4) on obtient:
+Injecting this formula in (4) we obtain:
 
 $$
 dx_{mn} = \sum_{i=1}^3 \sum_{j=1}^3 dy_{ij} \cdot w_{m-i+1,n-j+1} \tag{7}
 $$
 
-On va visualiser ce que cela nous donne sur quelques valeurs choisies pour les indices. Par exemple 
+Lets visualize it on several chosen values for the indices.
+
 
 $$
 \begin{align*}
@@ -540,7 +547,7 @@ dy_{i3} w_{2-i,-1,}\\
 \end{align*}
 $$
 
-En utilisant $*$ pour notation du produit de convolution, on a:
+Using $*$ notation for convolution, we have:
 
 $$
 dx_{11} = dy * 
@@ -551,7 +558,7 @@ w_{1,1} & 0 & 0 \\
 \end{bmatrix}
 $$
 
-Comme les valeurs de $dy$ ne changent pas on va se limiter aux valeurs des indices de w. Pour $dx_{22}$ : $3-i,3-j$
+As $dy$ remain the same, we will only look at the values of indices of w. For $dx_{22}$,  range for w: $3-i,3-j$
 
 $$
 \begin{bmatrix}
@@ -561,7 +568,7 @@ $$
 \end{bmatrix}
 $$
 
-Donc on a un produit de convolution entre dy et une matrice w' de type:
+We now have a convolution between dy and a w' matrix defined by:
 
 $$
 \begin{bmatrix}
@@ -571,7 +578,7 @@ w_{1,2} & w_{1,1} & 0 \\
 \end{bmatrix}
 $$
 
-Autre exemple pour essayer de clarifier les choses: $dx_{43}$, de nouveau on se limite aux valeurs des indices: $4-i,3-j$
+Another instance in order to see what's happening. $dx_{43}$, w : $4-i,3-j$
 
 $$
 \begin{bmatrix}
@@ -589,7 +596,7 @@ w_{1,2} & w_{1,1} & 0
 \end{bmatrix}
 $$
 
-Et du coup pour finir $dx_{44}$
+Last one $dx_{44}$
 
 $$
 \begin{bmatrix}
@@ -599,7 +606,7 @@ $$
 \end{bmatrix}
 $$
 
-Donc on voit bien apparaître un filtre w inversé. On obtient cette fois ci un produit convolutif entre $dy$ avec une bordure de 0 et $w'$, notre $w$ inversé, qui se déplace sur cette matrice avec un pas (stride) de 1.
+We do see poping up an "inverted filter" w'. This time we have a convolution between an input $dy$ with a 0-padding border of size 1 and a filter w' slidding with a stride of 1. 
 
 $$w'_{ij}=w_{3-i,3-j}$$
 
@@ -621,7 +628,7 @@ $$
 
 $$dx = dy\_0 * w' \tag{8}$$ 
 
-### Résumé des équations de rétropropagation
+### Summary of backprop equations
 
 $$
 db = \sum_{i=1}^3 \sum_{j=1}^3 dy_{ij}
@@ -661,27 +668,31 @@ w_{12} & w_{11} \\
 = dy\_0 * w'
 $$
 
-## Cas général et prise en compte de la profondeur
+## Taking depth into account
 
-Les choses se complexifient encore un peu plus lorsque l'on cherche à prendre en compte la profondeur de c canaux de x et celle de f filtres de y.
+Things are becoming slightly more complex when we try to take depth into account (C channels for input X, and f distinct filters for w)
 
-Entrées
-- x: données d'entrée de dimensions (C, H, W)
-- w: poids de filtres de dimensions (F, C, HH, WW)
-- b: Biais de dimensions (F,)
+Inputs
+- x: shape (C, H, W)
+- w: filter's weights shape (F, C, HH, WW)
+- b: shape (F,)
 
-Sortie:
-- y: Données de sortie de dimension  (F, H', W')
+Outputs:
+- y: shape (F, H', W')
 
-Les équations mathématiques multiplient les indices et en deviennent difficilement lisibles. Par exemple la propagation dans ce cas de figure donne:
+Maths formulas see many indices emerging, making them more difficult to read. The forward pass formula in our example will be:
 
-$$y_{fij} = \sum_{k} \sum_{l} w_{fckl} \cdot x_{c,i+k-1,j+l-1} +b_f  \tag {9}$$
+$$
+y_{fij} = \sum_{k} \sum_{l} w_{fckl} \cdot x_{c,i+k-1,j+l-1} +b_f  \tag {9}
+$$
 
 ### db
 
-Le calcul de db reste simple et chaque $b_f$ correspond à une carte d'activation $y_f$:
+db computation remains easy as each $b_f$ is related to an activation map $y_f$:
 
-$$db_f = dy_{fij}\cdot\frac{\partial y_{fij}}{\partial b_f}$$
+$$
+db_f = dy_{fij}\cdot\frac{\partial y_{fij}}{\partial b_f}
+$$
 
 $$
 db_f = \sum_{i} \sum_{j} dy_{fij}
@@ -691,15 +702,16 @@ $$
 
 $$dw_{fckl} = dy_{fij}\cdot\frac{\partial y_{fij}}{\partial w_{fckl}}$$
 
-En injectant (9), comme la double somme n'est pas faite sur les indices de dy, on peut écrire (en mélangeant un peu les deux notations sommation et Einstein):
+Using (9), as the double sum does not use dy indices, we can write (using a mix of sum and Einstein notation):
 
 $$\frac{\partial y_{fij}}{\partial w_{fckl}} = x_{c,i+k-1,j+l-1}$$
 
 $$dw_{fckl} = dy_{fij}\cdot x_{c,i+k-1,j+l-1}$$
 
-### Algorithme
+### Algorithm
 
-Pour la programmation, plutôt que de détailler l'ensemble des équations, ce qui peut certainement se faire avec un peu (beaucoup) de rigueur, on va se limiter aux intuitions que l'on a percées grâce aux exemples précédents. Et essayer de généraliser en jouant sur les dimensions. On peut comparer nos résultats avec un calcul numérique des gradients, ce qui permettra de valider la solution.
+Now that we have the intuition of how it's working, we choose not to write the entire set of equations (which can be pretty tedious), but we'll use what has been coded for the forward pass, and playing with dimensions try to code the backprop for each gradient. Fortunately we can compute a numerical value of the gradient to check our implementation.
+
 
 ```python
 def conv_backward_naive(dout, cache):
@@ -781,7 +793,7 @@ def conv_backward_naive(dout, cache):
 
 ```
 
-#### Comparaison avec le calcul numérique du gradient
+#### Gradient numerical check
 
 ```python
 Testing conv_backward_naive function
@@ -790,14 +802,18 @@ dw error:  1.381022780971562e-10
 db error:  1.1299800330640326e-10
 ```
 
-Erreur proche de 0 à chaque fois, ce qui valide notre algorithme ! :)
+Almost 0 each time, everything seems tobe OK! :)
 
-## Références
 
-- [cours de Stanford](http://cs231n.stanford.edu/)
-- [Réseaux convolutionnels exemple de programmation: assignment 2](http://cs231n.github.io/assignments2019/assignment2/)
-- [Réseaux convolutionnels](https://www.youtube.com/watch?v=bNb2fEVKeEo&list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv&index=5)
-- [Mise en application de la propagation](https://neodelphis.github.io/convnet/python/2019/07/02/convnet-forward-pass.html).
+## References
+
+- [Stanford course on convolutional neural networks for visual recognition](http://cs231n.stanford.edu/)
+- [assignment 2](http://cs231n.github.io/assignments2019/assignment2/)
+- [Convolutional neural network, forward pass](https://www.youtube.com/watch?v=bNb2fEVKeEo&list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv&index=5)
+- [Convolution Layer : Naive implementation of the forward pass](https://neodelphis.github.io/convnet/python/2019/07/02/convnet-forward-pass.html).
 - [Backpropagation In Convolutional Neural Networks](https://www.jefkine.com/general/2016/09/05/backpropagation-in-convolutional-neural-networks/)
+
+
+Comments are welcome to improve this post, feel free to contact me!
 
 

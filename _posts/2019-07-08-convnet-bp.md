@@ -80,7 +80,7 @@ On connait
 
 $dy = \left(\frac{\partial L}{\partial y_{ij}}\right)$
 
-On cherche $dx$, $d\omega$ et $d\beta$, dérivées partielles respectives de notre fonction de coût dont le gradient a été rétropropagé jusqu'à y.
+On cherche $dx$, $dw$ et $db$, dérivées partielles respectives de notre fonction de coût dont le gradient a été rétropropagé jusqu'à y.
 
 ## Cas d'un vecteur d'entrée x à 1 dimension
 
@@ -487,7 +487,7 @@ $$
 \end{align*}
 $$
 
-Donc lorsque l'on fait $k=m-i$, on va sortir un peu de l'intervalle de valeurs, $(m-i+1) \in [-1,4]$, donc pour garder la cohérence dans la formule (5) on va étendre la matrice $w$ avec des $0$ dès que les valeurs des indices sortiront de l'intervalle de définition.
+Donc lorsque l'on fait $k=m-i+1$, on va sortir un peu de l'intervalle de valeurs, $(m-i+1) \in [-1,4]$, donc pour garder la cohérence dans la formule (5) on va étendre la matrice $w$ avec des $0$ dès que les valeurs des indices sortiront de l'intervalle de définition.
 
 De nouveau, dans la double somme de (5), on peut avoir une seule dérivée partielle de x qui soit égale à 1, lorsque l'on a (6), donc en remplaçant dans (5):
 
