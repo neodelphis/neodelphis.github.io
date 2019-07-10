@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title:  "Backpropagation in a convolutional layer"
-date:   2019-07-09 12:00:00 +0200
+date:   2019-07-10 12:00:00 +0200
 categories:
   - convnet
   - maths
