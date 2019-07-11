@@ -11,6 +11,10 @@ categories:
 ---
 Backpropagation in a convolutional layer
 
+Working on the Stanford course CS231n: Convolutional Neural Networks for Visual Recognition. I did not manage to find a complete explanation of how backprop math is working. So here is a post detailing step by step how this key element of Convnet is dealing with backprop.
+
+![convnet bp sand](/assets/images/convnet-bp-sand.jpg)
+
 ## Introduction
 
 ### Motivation

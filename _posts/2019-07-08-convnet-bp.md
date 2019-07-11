@@ -10,6 +10,11 @@ categories:
 ---
 Rétropropagation dans une couche convolutive
 
+En travaillant sur le cours de Stanford course CS231n: Convolutional Neural Networks for Visual Recognition, je me suis heurté au manque d'information pour coder la rétropropagation dans une couche convolutive. Cet article présente les étapes de la construction de la solution mathématique et la mise en place de l'algorithme pour répondre à ce problème.
+
+![convnet bp sand](/assets/images/convnet-bp-sand.jpg)
+
+
 ## Introduction
 
 ### Motivation
