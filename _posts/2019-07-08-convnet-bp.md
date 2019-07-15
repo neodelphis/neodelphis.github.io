@@ -8,7 +8,7 @@ categories:
   - maths
   - python
 ---
-Rétropropagation dans une couche convolutive
+Rétropropagation dans une couche convolutive - DRAFT eq# à revoir
 
 En travaillant sur le cours de Stanford course CS231n: Convolutional Neural Networks for Visual Recognition, je me suis heurté au manque d'information pour coder la rétropropagation dans une couche convolutive. Cet article présente les étapes de la construction de la solution mathématique et la mise en place de l'algorithme pour répondre à ce problème.
 
@@ -685,6 +685,8 @@ $$dw_{fckl} = dy_{fij}\cdot x_{c,i+k-1,j+l-1}$$
 ### Algorithme
 
 Pour la programmation, plutôt que de détailler l'ensemble des équations, ce qui peut certainement se faire avec un peu (beaucoup) de rigueur, on va se limiter aux intuitions que l'on a percées grâce aux exemples précédents. Et essayer de généraliser en jouant sur les dimensions. On peut comparer nos résultats avec un calcul numérique des gradients, ce qui permettra de valider la solution.
+
+{% gist a8c20fbeee2b949d24feb58945d8b741 %}
 
 ```python
 def conv_backward_naive(dout, cache):
