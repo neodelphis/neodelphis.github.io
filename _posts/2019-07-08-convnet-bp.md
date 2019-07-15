@@ -702,6 +702,32 @@ db error:  1.1299800330640326e-10
 
 Erreur proche de 0 à chaque fois, ce qui valide notre algorithme ! :)
 
+
+#### Généralisation pour tout stride
+
+Dans cette version on regarde la contribution de chaque volume d'entrée au résultat y et on rétropropage en regardant des produits de convolution entre volumes de tailles identiques. Dans ce cas on a dx_input_volume = dy[i,j] * w (* est ici un simple produit). On cumule ensuite toutes les contributions dx qui participent aux mêmes indices. Finalement c'est beaucoup plus simple dans la mise en oeuvre que la version mathématique appliquée sur l'ensemble des valeurs de x.
+
+```python
+s=stride
+# 0-padding juste sur les deux dernières dimensions de dx
+dxp = np.pad(dx, ((0,), (0,), (pad,), (pad, )), 'constant')
+
+for n in range(N):       # On parcourt toutes les images
+    for i in range(H_):
+        for j in range(W_):
+            for k in range(HH):
+                for l in range(WW):
+                    for f in range(F):   # On parcourt tous les filtres
+                        for c in range(C): # profondeur
+                            dxp[n,c,s*i+k,s*j+l] += dout[n,f,i,j] * w[f,c,k,l]
+#Remove padding for dx
+if pad:
+    dx = dxp[:,:,pad:-pad,pad:-pad]
+else:
+    dx = dxp
+```
+
+
 ## Références
 
 - [cours de Stanford](http://cs231n.stanford.edu/)
