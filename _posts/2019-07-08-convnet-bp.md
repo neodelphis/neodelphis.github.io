@@ -686,87 +686,10 @@ $$dw_{fckl} = dy_{fij}\cdot x_{c,i+k-1,j+l-1}$$
 
 Pour la programmation, plutôt que de détailler l'ensemble des équations, ce qui peut certainement se faire avec un peu (beaucoup) de rigueur, on va se limiter aux intuitions que l'on a percées grâce aux exemples précédents. Et essayer de généraliser en jouant sur les dimensions. On peut comparer nos résultats avec un calcul numérique des gradients, ce qui permettra de valider la solution.
 
+Cette solution se limite au cas où l'on a un stride = 1
+
 {% gist a8c20fbeee2b949d24feb58945d8b741 %}
 
-```python
-def conv_backward_naive(dout, cache):
-    """
-    A naive implementation of the backward pass for a convolutional layer.
-
-    Inputs:
-    - dout: Upstream derivatives.
-    - cache: A tuple of (x, w, b, conv_param) as in conv_forward_naive
-
-    Returns a tuple of:
-    - dx: Gradient with respect to x
-    - dw: Gradient with respect to w
-    - db: Gradient with respect to b
-    """
-    dx, dw, db = None, None, None
-
-    ## Récupération des variables
-    x, w, b, conv_param = cache
-    pad = conv_param['pad']
-    stride = conv_param['stride']
-    
-    ## Initialisations
-    dx = np.zeros_like(x)
-    dw = np.zeros_like(w)
-    db = np.zeros_like(b)
-    
-    ## Dimensions
-    N, C, H, W = x.shape
-    F, _, HH, WW = w.shape
-    _, _, H_, W_ = dout.shape
-    
-    ## db - dout (N, F, H', W')
-    ## On somme sur tous les éléments sauf les indices des filtres
-    db = np.sum(dout, axis=(0, 2, 3))
-    
-    ## dw
-    ## 0-padding juste sur les deux dernières dimensions de x
-    xp = np.pad(x, ((0,), (0,), (pad,), (pad, )), 'constant')
-    
-    for n in range(N):       ## On parcourt toutes les images
-        for c in range(C):       ## On parcourt tous les channels
-            for f in range(F):   ## On parcourt tous les filtres
-
-                filter = dout[n, f, :, :] ## y=dout utilisé comme filtre
-                filter = filter.reshape(-1)
-
-                for i in range(HH):
-                    for j in range(WW):
-                        input_volume = xp[n, c, i*stride:i*stride+H, j*stride:j*stride+W]
-                        dw[f,c,i,j] += np.matmul(input_volume.reshape(-1), filter.T)
-
-    ## dx
-    ## 0-padding juste sur les deux dernières dimensions de dy = dout (N, F, H', W')
-    doutp = np.pad(dout, ((0,), (0,), (pad,), (pad, )), 'constant')
-    
-    ## filtre inversé dimension (F, C, HH, WW)
-    w_ = np.zeros_like(w)
-    for i in range(HH):
-        for j in range(WW):
-            w_[:,:,i,j] = w[:,:,HH-i-1,WW-j-1]
-    
-
-    for n in range(N):       ## On parcourt toutes les images
-        for c in range(C):       ## On parcourt tous les channels
-            for f in range(F):   ## On parcourt tous les filtres
-
-                filter = w_[f, c, :, :] ## w_ = filtre
-                filter = filter.reshape(-1)
-
-                for i in range(H_):
-                    for j in range(W_):
-                        input_volume = doutp[n, f, i*stride:i*stride+HH, j*stride:j*stride+WW]
-                           
-                        dx[n,c,i,j] += np.matmul(input_volume.reshape(-1), filter.T)
-
-
-    return dx, dw, db
-
-```
 
 #### Comparaison avec le calcul numérique du gradient
 
