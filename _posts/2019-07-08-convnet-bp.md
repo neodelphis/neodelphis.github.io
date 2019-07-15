@@ -705,27 +705,25 @@ Erreur proche de 0 à chaque fois, ce qui valide notre algorithme ! :)
 
 #### Généralisation pour tout stride
 
-Dans cette version on regarde la contribution de chaque volume d'entrée au résultat y et on rétropropage en regardant des produits de convolution entre volumes de tailles identiques. Dans ce cas on a dx_input_volume = dy[i,j] * w (* est ici un simple produit). On cumule ensuite toutes les contributions dx qui participent aux mêmes indices. Finalement c'est beaucoup plus simple dans la mise en oeuvre que la version mathématique appliquée sur l'ensemble des valeurs de x.
+Dans cette version on regarde la contribution de chaque volume d'entrée au résultat y et on rétropropage en calculant des produits de convolution entre volumes de tailles identiques. Dans ce cas on a `dx_input_volume = dy[i,j] . w` (`.` est ici un simple produit). On cumule ensuite toutes les contributions dx qui participent aux mêmes indices. Finalement c'est beaucoup plus simple dans la mise en oeuvre que la version mathématique appliquée sur l'ensemble des valeurs de x.
 
-```python
-s=stride
-# 0-padding juste sur les deux dernières dimensions de dx
-dxp = np.pad(dx, ((0,), (0,), (pad,), (pad, )), 'constant')
+Voici une version sans vectorisation, particulièrement lente, mais cela permet de voir comment les choses se mettent en place. Que ce soit pour dw ou dx, on se limite pour le coeur du calcul à l'influence du produit de convolution de deux éléments de taille identique (qui donnent un scalaire), et on cumule ensuite lors des déplacements du filtre sur l'entrée x pendant la propagation.
 
-for n in range(N):       # On parcourt toutes les images
-    for i in range(H_):
-        for j in range(W_):
-            for k in range(HH):
-                for l in range(WW):
-                    for f in range(F):   # On parcourt tous les filtres
-                        for c in range(C): # profondeur
-                            dxp[n,c,s*i+k,s*j+l] += dout[n,f,i,j] * w[f,c,k,l]
-#Remove padding for dx
-if pad:
-    dx = dxp[:,:,pad:-pad,pad:-pad]
-else:
-    dx = dxp
-```
+pour `x` et `w` de mêmes dimensions, `y` est un scalaire:
+
+$$
+y = x * w
+$$
+
+
+$$
+dx = w . dy\\
+dw = x . dy
+$$
+
+
+
+{% gist b36fe40c381415033772f4c007669aed %}
 
 
 ## Références
