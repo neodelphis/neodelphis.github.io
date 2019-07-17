@@ -672,7 +672,7 @@ w_{12} & w_{11} \\
 = dy\_0 * w'
 $$
 
-## Taking depth into account
+## Taking depths into account
 
 Things are becoming slightly more complex when we try to take depth into account (C channels for input x, and F distinct filters for w)
 
@@ -714,7 +714,7 @@ $$dw_{fckl} = dy_{fij}\cdot x_{c,i+k-1,j+l-1}$$
 
 ### Algorithm
 
-Now that we have the intuition of how it's working, we choose not to write the entire set of equations (which can be pretty tedious), but we'll use what has been coded for the forward pass, and playing with dimensions try to code the backprop for each gradient. Fortunately we can compute a numerical value of the gradient to check our implementation.
+Now that we have the intuition of how it's working, we choose not to write the entire set of equations (which can be pretty tedious), but we'll use what has been coded for the forward pass, and playing with dimensions try to code the backprop for each gradient. Fortunately we can compute a numerical value of the gradient to check our implementation. This implementation is only valid for a stride=1, thing are becoming slightly more complex with a distinct stride, and another approach is needed. Maybe for another post!
 
 This first solution is only valid in a stride = 1 case
 
@@ -732,7 +732,7 @@ db error:  1.1299800330640326e-10
 Almost 0 each time, everything seems tobe OK! :)
 
 
-#### Généralisation pour tout stride
+#### Généralisation pour tout stride - Nouvel article?
 
 Dans cette version on regarde la contribution de chaque volume d'entrée au résultat y et on rétropropage en calculant des produits de convolution entre volumes de tailles identiques. Dans ce cas on a `dx_input_volume = dy[i,j] . w` (`.` est ici un simple produit). On cumule ensuite toutes les contributions dx qui participent aux mêmes indices. Finalement c'est beaucoup plus simple dans la mise en oeuvre que la version mathématique appliquée sur l'ensemble des valeurs de x.
 
@@ -759,7 +759,7 @@ $$
 ## References
 
 - [Stanford course on convolutional neural networks for visual recognition](http://cs231n.stanford.edu/)
-- [assignment 2](http://cs231n.github.io/assignments2019/assignment2/)
+- [Stanford CNN assignment 2](http://cs231n.github.io/assignments2019/assignment2/)
 - [Convolutional neural network, forward pass](https://www.youtube.com/watch?v=bNb2fEVKeEo&list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv&index=5)
 - [Convolution Layer : Naive implementation of the forward pass](https://neodelphis.github.io/convnet/python/2019/07/02/convnet-forward-pass.html).
 - [Backpropagation In Convolutional Neural Networks](https://www.jefkine.com/general/2016/09/05/backpropagation-in-convolutional-neural-networks/)

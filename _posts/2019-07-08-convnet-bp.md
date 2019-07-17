@@ -646,7 +646,7 @@ w_{12} & w_{11} \\
 = dy\_0 * w'
 $$
 
-## Cas général et prise en compte de la profondeur
+## Cas général et prise en compte des profondeurs
 
 Les choses se complexifient encore un peu plus lorsque l'on cherche à prendre en compte la profondeur de C canaux de x et celle de F filtres de y.
 
@@ -703,7 +703,7 @@ db error:  1.1299800330640326e-10
 Erreur proche de 0 à chaque fois, ce qui valide notre algorithme ! :)
 
 
-#### Généralisation pour tout stride
+#### Généralisation pour tout stride - Nouvel article?
 
 Dans cette version on regarde la contribution de chaque volume d'entrée au résultat y et on rétropropage en calculant des produits de convolution entre volumes de tailles identiques. Dans ce cas on a `dx_input_volume = dy[i,j] . w` (`.` est ici un simple produit). On cumule ensuite toutes les contributions dx qui participent aux mêmes indices. Finalement c'est beaucoup plus simple dans la mise en oeuvre que la version mathématique appliquée sur l'ensemble des valeurs de x.
 
@@ -729,7 +729,7 @@ $$
 ## Références
 
 - [cours de Stanford](http://cs231n.stanford.edu/)
-- [Réseaux convolutionnels exemple de programmation: assignment 2](http://cs231n.github.io/assignments2019/assignment2/)
+- [Stanford CNN assignment 2](http://cs231n.github.io/assignments2019/assignment2/)
 - [Réseaux convolutionnels](https://www.youtube.com/watch?v=bNb2fEVKeEo&list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv&index=5)
 - [Mise en application de la propagation](https://neodelphis.github.io/convnet/python/2019/07/02/convnet-forward-pass.html).
 - [Backpropagation In Convolutional Neural Networks](https://www.jefkine.com/general/2016/09/05/backpropagation-in-convolutional-neural-networks/)
