@@ -7,62 +7,70 @@ categories:
   - convnet
   - python
 ---
-Propagation dans une couche convolutive - draft
+Propagation dans une couche convolutive
+
+### Objectif
+
+On cherche à calculer comment se fait la propagation de l'information dans une couche convolutive:
+Les notations de ce post reprennent celles proposées dans le cours de Stanford CS231n: Convolutional Neural Networks for Visual Recognition. Cet article présente les étapes de la construction d'un algorithme simple pour la propagation dans une couche convolutive.
+
+![conv layer graph](/assets/images/conv-forward.jpg)
+
 
 ### Paramètres en entrée et sortie de la couche convolutive
 
-A naive implementation of the forward pass for a convolutional layer.
+![conv layer diagram](/assets/images/conv-layer-diagram.jpg)
 
-The input consists of N data points, each with C channels, height H and width W. We convolve each input with F different filters, where each filter spans all C channels and has height HH and width WW.
+On dispose d'une entrée x de N points, chacun avec C canaux, une hauteur de H, et une largeur de W. On effectue un produit de convolution avec F filtres différents w, sur l'intégralité de la profondeur C, chaque filtre a pour hauteur HH et comme largeur WW.
 
-Input:
-- x: Input data of shape (N, C, H, W)
-- w: Filter weights of shape (F, C, HH, WW)
-- b: Biases, of shape (F,)
-- conv_param: A dictionary with the following keys:
-  - 'stride': The number of pixels between adjacent receptive fields in the
-    horizontal and vertical directions.
-  - 'pad': The number of pixels that will be used to zero-pad the input. 
+Entrées:
+- x: données d'entrée de dimensions (N, C, H, W)
+- w: poids de filtres de dimensions (F, C, HH, WW)
+- b: Biais de dimensions (F,)
+- conv_param: un dictionnaire de paramètres avec les entrées suivantes:
+  - 'stride': Le nombre de pixel entre deux zones successives d'application du filtre (identiques en largeur et en hauteur).
+  - 'pad': Le nombre de pixel pour effectuer un remplissage à 0 ("0-padding") autour de l'entrée. Ce remplissage est fait de manière symétrique selon les différents axes.
 
 
-During padding, 'pad' zeros should be placed symmetrically (i.e equally on both sides) along the height and width axes of the input. Be careful not to modfiy the original input x directly.
-
-Returns a tuple of:
-- out: Output data, of shape (N, F, H', W') where H' and W' are given by
+Sortie:
+- out: Données de sortie de dimension  (N, F, H', W') où H' and W' sont définis par:
   - H' = 1 + (H + 2 * pad - HH) / stride
   - W' = 1 + (W + 2 * pad - WW) / stride
-- cache: (x, w, b, conv_param)
+- cache: données mémorisées pour la rétropropagation (x, w, b, conv_param)
 
 
-### Formulation mathématique  pour un filtre $y=f(x,w,b)$
+### Produit de convolution
 
-Dimensions simplifiées
-- x : $N \times N$
-- $w$ : $m \times m$
-- $\beta$ biais : scalaire
-- y : $(N-m+1)\times (N-m+1)$
+Cas général simplifié où N=1, C=1, F=1, stride=1, pad=0
 
-Propagation
-$$y_{ij} = \left (\sum_{a=0}^{m-1} \sum_{b=0}^{m-1} \omega_{ab} x_{(i+a)(j+b)}  \right ) + \beta \tag {1}$$
+N=1 une seule entrée, C=1 un seul canal, F=1 un seul filtre.
+
+Pas de biais
+
+![conv 2D](/assets/images/conv-product.jpg)
+
+- x: données d'entrée de dimensions (H, W)
+- w: poids de filtres de dimensions (HH, WW)
+- y: sortie de dimensions (H', W')
+  - H' = 1 + (H - HH)
+  - W' = 1 + (W - WW)
+
+$$\forall (i,j) \in [1,H'] \times [1,W']$$
+
+$$y_{ij} = \sum_{k} \sum_{l} w_{kl} \cdot x_{i+k-1,j+l-1}  \tag {1}$$
+
+
+
+
 
 ### Cas particulier simple
 
 Détail de la construction du produit de convolution simplifié avant généralisation
 
-x
-
 
 ```python
-import numpy as np
 x = np.array([[[1, 2], [7, 4]],[[2, 3], [8, 3]],[[1, 1], [1, 1]]])
-x.shape
 ```
-
-
-
-
-    (3, 2, 2)
-
 
 
 xp = x avec 0-padding de 1 sur chacun des canaux
@@ -70,7 +78,6 @@ xp = x avec 0-padding de 1 sur chacun des canaux
 
 ```python
 xp = np.pad(x,((0,), (1,), (1, )), 'constant')
-xp
 ```
 
 
@@ -213,59 +220,5 @@ y
 ### Généralisation
 
 
-```python
-def conv_forward_naive(x, w, b, conv_param):
-    """
-    A naive implementation of the forward pass for a convolutional layer.
+{% gist be2ce81ba555cbb2c731cbe24e30c33a %}
 
-    The input consists of N data points, each with C channels, height H and
-    width W. We convolve each input with F different filters, where each filter
-    spans all C channels and has height HH and width WW.
-
-    Input:
-    - x: Input data of shape (N, C, H, W)
-    - w: Filter weights of shape (F, C, HH, WW)
-    - b: Biases, of shape (F,)
-    - conv_param: A dictionary with the following keys:
-      - 'stride': The number of pixels between adjacent receptive fields in the
-        horizontal and vertical directions.
-      - 'pad': The number of pixels that will be used to zero-pad the input. 
-        
-
-    During padding, 'pad' zeros should be placed symmetrically (i.e equally on both sides)
-    along the height and width axes of the input. Be careful not to modfiy the original
-    input x directly.
-
-    Returns a tuple of:
-    - out: Output data, of shape (N, F, H', W') where H' and W' are given by
-      H' = 1 + (H + 2 * pad - HH) / stride
-      W' = 1 + (W + 2 * pad - WW) / stride
-    - cache: (x, w, b, conv_param)
-    """
-    out = None
-    
-    pad = conv_param['pad']
-    stride = conv_param['stride']
-    N, C, H, W = x.shape
-    F, _, HH, WW = w.shape
-
-    # dimensions de la sortie (pas de tests sur la validité des choix)
-    H_ = int(1 + (H + 2 * pad - HH) / stride)
-    W_ = int(1 + (W + 2 * pad - WW) / stride)
-
-    # 0-padding juste sur les deux dernières dimensions de x
-    xp = np.pad(x, ((0,), (0,), (pad,), (pad, )), 'constant')
-    
-    out = np.zeros((N, F, H_, W_))
-    
-    for n in range(N):       # On parcourt toutes les images
-        for f in range(F):   # On parcourt tous les filtres
-            filter = w[f, :, :, :].reshape(-1)
-            for i in range(H_):
-                for j in range(W_):
-                    input_volume = xp[n, :, i*stride:i*stride+HH, j*stride:j*stride+WW]
-                    out[n,f,i,j] = np.matmul(input_volume.reshape(-1), filter.T) + b[f]
-
-    cache = (x, w, b, conv_param)
-    return out, cache
-```
