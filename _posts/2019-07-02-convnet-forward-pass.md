@@ -1,10 +1,10 @@
 ---
-layout: post
-mathjax: true
 title:  "Propagation dans une couche convolutive"
+mathjax: true
+classes: wide
 date:   2019-07-02 12:00:00 +0200
 categories:
-  - convnet
+  - convolution
   - python
 ---
 Propagation dans une couche convolutive

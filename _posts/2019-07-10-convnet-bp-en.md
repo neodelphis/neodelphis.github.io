@@ -1,10 +1,10 @@
 ---
-layout: post
-mathjax: true
 title:  "Backpropagation in a convolutional layer"
+mathjax: true
+classes: wide
 date:   2019-07-10 09:00:00 +0200
 categories:
-  - convnet
+  - convolution
   - maths
   - python
   - english

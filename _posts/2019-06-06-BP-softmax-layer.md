@@ -1,11 +1,11 @@
 ---
-layout: post
 mathjax: true
 title:  "Rétropropagation du gradient softmax"
 date:   2019-06-06 10:06:00 +0200
 categories:
   - maths
 ---
+
 Rétropropagation du gradient dans le cadre d'une ultime couche $Softmax$
 
 Cet article présente la rétropropagation du gradient dans un réseau neuronal monocouche complètement connecté, avec softmax comme fonction d'activation et la divergence de Kullback-Leibler comme fonction de coût. Minimiser cette fonction qui fait office de distance entre nos deux distributions va se résumer dans notre cas à réduire l'entropie croisée entre le résultat obtenu et le résultat souhaité.
