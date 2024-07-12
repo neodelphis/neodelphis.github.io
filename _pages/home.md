@@ -28,6 +28,11 @@ feature_row:
     url: "/convolution/maths/python/english/convnet-bp-en/"
     btn_label: "Read More"
     btn_class: "btn--primary"
+  - title: "De la formation"
+    excerpt: "Supports pour le cours d'initiation au machine learning proposé sur une semaine de formation."
+    url: "/assets/pdf/init-ml.pdf"
+    btn_label: "Support pdf"
+    btn_class: "btn--primary"
 feature_row2:
   - image_path: /assets/images/unsplash-gallery-image-2-th.jpg
     alt: "placeholder image 2"
@@ -57,3 +62,4 @@ feature_row4:
 {% include feature_row id="intro" type="center" %}
 
 {% include feature_row %}
+
